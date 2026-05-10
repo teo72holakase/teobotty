@@ -16,6 +16,26 @@ class Moderation(commands.Cog):
         self.muted_users = {}  # {user_id: unmute_time}
         self.check_mutes.start()
 
+    async def role_autocomplete(
+        self, interaction: discord.Interaction, current: str
+    ) -> list[app_commands.Choice[str]]:
+        """Autocomplete for roles"""
+        try:
+            roles = [r for r in interaction.guild.roles if current.lower() in r.name.lower()][:25]
+            return [app_commands.Choice(name=r.name, value=str(r.id)) for r in roles]
+        except:
+            return []
+
+    async def member_autocomplete(
+        self, interaction: discord.Interaction, current: str
+    ) -> list[app_commands.Choice[str]]:
+        """Autocomplete for members"""
+        try:
+            members = [m for m in interaction.guild.members if current.lower() in m.name.lower()][:25]
+            return [app_commands.Choice(name=m.name, value=str(m.id)) for m in members]
+        except:
+            return []
+
     @app_commands.command(
         name="lock",
         description="🔒 Bloquea el canal actual para que nadie pueda enviar mensajes"
@@ -92,6 +112,7 @@ class Moderation(commands.Cog):
         role="Rol a dar/quitar"
     )
     @app_commands.checks.has_permissions(manage_roles=True)
+    @app_commands.autocomplete(role=role_autocomplete)
     async def role_give(
         self,
         interaction: discord.Interaction,

@@ -16,6 +16,20 @@ class Triggers(commands.Cog):
         from main import db
         self.db = db
 
+    async def trigger_autocomplete(
+        self, interaction: discord.Interaction, current: str
+    ) -> list[app_commands.Choice[str]]:
+        """Autocomplete for trigger keywords"""
+        try:
+            triggers = await self.db.get_all_triggers(interaction.guild.id)
+            keywords = [trigger[0] for trigger in triggers]
+            
+            # Filter based on current input
+            filtered = [k for k in keywords if current.lower() in k.lower()][:25]
+            return [app_commands.Choice(name=k, value=k) for k in filtered]
+        except:
+            return []
+
     @app_commands.command(
         name="add_trigger",
         description="🔔 Añade una respuesta automática para una palabra clave"
@@ -51,6 +65,7 @@ class Triggers(commands.Cog):
     )
     @app_commands.describe(keyword="Palabra clave a eliminar")
     @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.autocomplete(keyword=trigger_autocomplete)
     async def remove_trigger(self, interaction: discord.Interaction, keyword: str):
         """Remove a trigger command"""
         try:

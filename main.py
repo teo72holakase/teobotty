@@ -29,7 +29,7 @@ intents.members = True
 intents.reactions = True
 intents.guilds = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(intents=intents)
 db = Database(DATABASE_PATH)
 
 
