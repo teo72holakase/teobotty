@@ -1,4 +1,4 @@
-# 🤖 TeoBot - Discord Bot en Python
+# 🤖 TeoBotty - Discord Bot en Python
 
 Bot de Discord modular y escalable construido con **discord.py**, **Cogs**, **SlashCommands** y **SQLite**.
 
@@ -9,8 +9,10 @@ Bot de Discord modular y escalable construido con **discord.py**, **Cogs**, **Sl
 ✅ **Autoroles** - Asignar roles automáticamente al entrar
 ✅ **Reaction Roles** - Menús interactivos con reacciones
 ✅ **Triggers** - Respuestas automáticas a palabras clave configurables
+✅ **Diversión** - Comandos entretenidos (dice, 8ball, coin, rps, etc.)
 ✅ **Arquitectura Modular** - Fácil de extender con nuevos Cogs
 ✅ **Base de Datos SQLite** - Persistencia local de configuraciones
+✅ **Estado personalizado** - Viendo JoJos Bizarre Adventure 👑
 
 ---
 
@@ -50,7 +52,7 @@ pip install -r requirements.txt
 
 **Salida esperada:**
 ```
-Successfully installed discord.py-2.3.2 python-dotenv-1.0.0 aiosqlite-0.19.0
+Successfully installed discord.py-2.7.1 python-dotenv-1.0.0 aiosqlite-0.19.0 audioop-lts-0.2.2
 ```
 
 ### 4️⃣ Configurar el Token
@@ -101,14 +103,16 @@ INFO:root:✅ Loaded cog: moderation
 INFO:root:✅ Loaded cog: welcome
 INFO:root:✅ Loaded cog: roles
 INFO:root:✅ Loaded cog: triggers
-INFO:root:✅ Bot logged in as TeoBot#0000
+INFO:root:✅ Loaded cog: fun
+INFO:root:✅ Bot logged in as TeoBotty#0000
+INFO:root:✅ Synced X slash commands
 ```
 
 ---
 
 ## 📖 Comandos Disponibles
 
-### 🔒 Moderación (`/lock`, `/unlock`, `/tempmute`, `/rolve`, `/userinfo`, `/serverinfo`)
+### 🔒 Moderación (`/lock`, `/unlock`, `/tempmute`, `/rolve`, `/userinfo`, `/serverinfo`, y más)
 
 ```bash
 /lock                          # Bloquea el canal actual
@@ -117,6 +121,13 @@ INFO:root:✅ Bot logged in as TeoBot#0000
 /rolve <usuario> <rol>        # Da/quita un rol
 /userinfo [usuario]           # Información del usuario
 /serverinfo                   # Información del servidor
+/mute <usuario> [segundos]    # Silencia un usuario
+/unmute <usuario>             # Desmutea un usuario
+/kick <usuario> [razón]       # Expulsa un usuario
+/ban <usuario> [razón]        # Banea un usuario
+/unban <usuario>              # Desbanea un usuario
+/warn <usuario> [razón]       # Advierte un usuario
+/clear <cantidad>             # Elimina mensajes
 ```
 
 ### 🎉 Bienvenida (`/set_welcome`, `/set_farewell`, `/test_welcome`)
@@ -156,6 +167,20 @@ INFO:root:✅ Bot logged in as TeoBot#0000
 /add_trigger "ayuda" "Para ayuda, contacta con los moderadores"
 ```
 
+### 🎮 Diversión (`/dice`, `/8ball`, `/coin`, `/rps`, `/quote`, `/roulette`, `/hug`, `/rate`, `/choose`)
+
+```bash
+/dice                         # 🎲 Lanza un dado
+/coin                         # 🪙 Lanza una moneda
+/rps                          # ✌️ Piedra, Papel o Tijeras
+/8ball                        # 🔮 Bola mágica (haz una pregunta)
+/quote                        # 💬 Cita motivacional aleatoria
+/roulette                     # 🎰 Ruleta rusa
+/hug <usuario>                # 🤗 Abraza a alguien
+/rate [cosa]                  # ⭐ Califica algo
+/choose <opción1> <opción2>   # 🎲 Elige aleatoriamente
+```
+
 ---
 
 ## 📁 Estructura del Proyecto
@@ -164,16 +189,19 @@ INFO:root:✅ Bot logged in as TeoBot#0000
 teobot/
 ├── main.py                    # Punto de entrada del bot
 ├── database.py               # Módulo de SQLite
-├── requirements.txt          # Dependencias
+├── requirements.txt          # Dependencias (discord.py 2.7.1+)
 ├── .env                      # Configuración (crear desde .env.example)
 ├── .env.example             # Plantilla de .env
+├── .gitignore               # Archivos a ignorar en Git
+├── Procfile                 # Configuración para hosting (Wispbyte)
 ├── bot_data.db              # Base de datos (se crea automáticamente)
 └── cogs/
     ├── __init__.py
-    ├── moderation.py         # Comandos de moderación
+    ├── moderation.py         # 17 comandos de moderación
     ├── welcome.py            # Sistema de bienvenida
     ├── roles.py              # Sistema de roles y autoroles
-    └── triggers.py           # Respuestas automáticas
+    ├── triggers.py           # Respuestas automáticas
+    └── fun.py                # 9 comandos de diversión
 ```
 
 ---
@@ -241,6 +269,18 @@ Asegúrate de que el bot tiene estos permisos en Discord:
 - ✅ Moderate Members
 - ✅ Send Messages
 - ✅ Read Message History
+- ✅ React to Messages (para reaction roles)
+
+---
+
+## 🌐 Despliegue en Wispbyte (Hosting 24/7)
+
+Para desplegar el bot en Wispbyte:
+
+1. Lee el archivo `WISPBYTE_DEPLOYMENT.txt` en la carpeta del proyecto
+2. Sigue los pasos exactos para conectar tu repositorio
+3. Configura las variables de entorno: `DISCORD_TOKEN`
+4. El bot estará online 24/7
 
 ---
 
@@ -253,4 +293,4 @@ Para problemas o sugerencias, verifica que:
 
 ---
 
-**¡Disfruta tu TeoBot! 🚀**
+**¡Disfruta tu TeoBotty! 🚀**

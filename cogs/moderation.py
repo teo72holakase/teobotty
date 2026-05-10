@@ -390,10 +390,10 @@ class Moderation(commands.Cog):
 
     @app_commands.command(
         name="sync",
-        description="🔄 Sincroniza los comandos slash (owner only)"
+        description="🔄 Sincroniza los comandos slash (admin only)"
     )
     @app_commands.describe(guild_id="ID opcional del servidor para sincronizar")
-    @app_commands.checks.is_owner()
+    @app_commands.checks.has_permissions(administrator=True)
     async def sync(self, interaction: discord.Interaction, guild_id: Optional[int] = None):
         """Sync commands to Discord (global or guild)"""
         try:
