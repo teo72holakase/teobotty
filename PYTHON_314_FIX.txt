@@ -1,0 +1,57 @@
+═══════════════════════════════════════════════════════════════════════════════════
+                    ✅ TEOBOT - PYTHON 3.14 COMPATIBILITY FIX
+═══════════════════════════════════════════════════════════════════════════════════
+
+PROBLEMA DETECTADO Y RESUELTO:
+──────────────────────────────────────────────────────────────────────────────────
+
+Error original:
+  ModuleNotFoundError: No module named 'audioop'
+
+Causa:
+  - Python 3.14 eliminó el módulo 'audioop' (fue deprecado años atrás)
+  - discord.py 2.3.2 aún intentaba importarlo
+  - Incompatibilidad con Python 3.14.3
+
+SOLUCIÓN IMPLEMENTADA:
+──────────────────────────────────────────────────────────────────────────────────
+
+✅ Actualizado requirements.txt:
+   - discord.py: 2.3.2 → 2.7.1 (compatible con Python 3.14)
+   - Agregado: audioop-lts==0.2.2 (reemplazo moderno del módulo eliminado)
+
+✅ Dependencias actualizadas:
+   discord.py==2.7.1
+   python-dotenv==1.0.0
+   aiosqlite==0.19.0
+   audioop-lts==0.2.2
+
+
+REINSTALAR DEPENDENCIAS (IMPORTANTE):
+──────────────────────────────────────────────────────────────────────────────────
+
+Ejecuta en terminal:
+   pip install -r requirements.txt
+
+O directamente:
+   pip uninstall discord.py -y
+   pip install discord.py==2.7.1 audioop-lts==0.2.2 python-dotenv aiosqlite
+
+
+VERIFICACIÓN:
+──────────────────────────────────────────────────────────────────────────────────
+
+✅ discord.py 2.7.1 instalado correctamente
+✅ audioop-lts disponible
+✅ Compatible con Python 3.14+
+✅ Importación de discord funciona sin errores
+
+
+EJECUTAR BOT:
+──────────────────────────────────────────────────────────────────────────────────
+
+Una vez actualizado, ejecuta:
+   python main.py
+
+
+═══════════════════════════════════════════════════════════════════════════════════

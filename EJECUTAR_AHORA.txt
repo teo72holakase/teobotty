@@ -1,0 +1,116 @@
+═══════════════════════════════════════════════════════════════════════════════════
+              🚀 TEOBOOTTY v2.0 - INSTRUCCIONES EJECUTAR AHORA
+═══════════════════════════════════════════════════════════════════════════════════
+
+👉 COPIA Y PEGA ESTOS COMANDOS EN POWERSHELL (Windows)
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+PASO 1 - INSTALAR DEPENDENCIAS
+──────────────────────────────────────────────────────────────────────────────────
+
+Abre PowerShell y ejecuta:
+
+cd C:\Users\teo72\Downloads\teobot
+pip install -r requirements.txt
+
+
+PASO 2 - VERIFICAR QUE TODO ESTÁ INSTALADO
+──────────────────────────────────────────────────────────────────────────────────
+
+Ejecuta:
+
+pip list | grep discord
+
+
+Deberías ver:
+  discord.py              2.7.1
+  aiosqlite               0.19.0
+  python-dotenv           1.0.0
+  audioop-lts             0.2.2
+
+
+PASO 3 - EJECUTAR EL BOT
+──────────────────────────────────────────────────────────────────────────────────
+
+Ejecuta:
+
+python main.py
+
+
+RESULTADO ESPERADO:
+─────────────────────────────────────────────────────────────────────────────────
+
+Deberías ver algo como:
+
+  ✅ Bot logged in as TeoBotty#XXXX
+  
+  [INFO] Loading cogs from ./cogs
+  Loaded cog: moderation
+  Loaded cog: welcome
+  Loaded cog: roles
+  Loaded cog: triggers
+  Loaded cog: fun
+  
+  [INFO] Syncing commands...
+  Synced X slash commands in Guild [Nombre del Servidor]
+  
+  [INFO] Bot is ready! TeoBotty online
+
+
+PRUEBA LOS COMANDOS EN DISCORD
+──────────────────────────────────────────────────────────────────────────────────
+
+En cualquier canal de tu servidor Discord, escribe:
+
+/dice
+/8ball
+/lock
+/userinfo
+
+Los comandos deberían aparecer en el menú desplegable.
+
+
+PARA DETENER EL BOT
+──────────────────────────────────────────────────────────────────────────────────
+
+Presiona: Ctrl + C
+
+En PowerShell verás:
+
+  Shutting down...
+
+
+SOLUCIONAR PROBLEMAS
+──────────────────────────────────────────────────────────────────────────────────
+
+❌ Error: ModuleNotFoundError: No module named 'discord'
+✅ Solución: pip install -r requirements.txt
+
+❌ Error: DISCORD_TOKEN not found
+✅ Solución: Abre .env y asegúrate que tienes tu token:
+           DISCORD_TOKEN=tu_token_aqui
+
+❌ Los comandos no aparecen en Discord
+✅ Solución: Ejecuta en Discord: /sync
+
+❌ Error: Port already in use
+✅ Solución: Ya hay otro bot corriendo. Busca en ProcessExplorer y ciérralo
+
+
+VERIFICACIONES FINALES
+──────────────────────────────────────────────────────────────────────────────────
+
+✅ .env contiene tu DISCORD_TOKEN
+✅ Bot está invitado a tu servidor Discord
+✅ Python 3.8+ instalado
+✅ requirements.txt instalado
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+                    PARA WISPBYTE (HOSTING 24/7)
+
+                   Lee: WISPBYTE_DEPLOYMENT.txt
+
+═══════════════════════════════════════════════════════════════════════════════════

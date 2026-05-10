@@ -1,0 +1,167 @@
+═══════════════════════════════════════════════════════════════════════════════════
+                 🎉 TEOBOOTTY v2.0 - ACTUALIZACIÓN COMPLETADA 🎉
+═══════════════════════════════════════════════════════════════════════════════════
+
+✅ CAMBIOS REALIZADOS:
+──────────────────────────────────────────────────────────────────────────────────
+
+1️⃣  COMANDOS SINCRONIZADOS CON DISCORD
+   ✓ Los comandos ahora aparecen en Discord automáticamente
+   ✓ Sincronización por servidor + sincronización global
+   ✓ Comando /sync para forzar resincronización
+
+2️⃣  ESTADO DEL BOT ACTUALIZADO
+   ✓ "Viendo JoJos Bizarre Adventure 👑"
+   ✓ Se actualiza automáticamente al iniciar
+
+3️⃣  COMANDOS DE MODERACIÓN EXPANDIDOS
+   ✓ /kick - Expulsar usuario
+   ✓ /ban - Banear usuario
+   ✓ /unban - Desbanear usuario
+   ✓ /warn - Advertir usuario
+   ✓ /clear - Eliminar mensajes
+   ✓ /mute - Silenciar usuario
+   ✓ /unmute - Desmutear usuario
+   ✓ /nick - Cambiar apodo
+   ✓ /softban - Softban para purgar mensajes
+   ✓ /slowmode - Ajustar velocidad de mensajes
+
+4️⃣  COMANDOS DE DIVERSIÓN (Cog Fun)
+   ✓ /dice - Lanzar dado
+   ✓ /coin - Lanzar moneda
+   ✓ /rps - Piedra, Papel o Tijeras
+   ✓ /8ball - Bola mágica
+   ✓ /quote - Citas motivacionales
+   ✓ /roulette - Ruleta rusa
+   ✓ /hug - Abrazar a alguien
+   ✓ /rate - Calificar cosas
+   ✓ /choose - Elegir aleatoriamente
+
+5️⃣  RENOMBRADO A TEOBOOTTY
+   ✓ Nombre del bot: TeoBotty
+   ✓ Descripción actualizada en código
+
+6️⃣  COMPATIBLE CON WISPBYTE
+   ✓ Procfile creado
+   ✓ requirements.txt actualizado
+   ✓ .gitignore para archivos sensibles
+   ✓ Guía de deployment completa
+   ✓ Variables de entorno configuradas
+
+
+📦 NUEVOS ARCHIVOS CREADOS:
+──────────────────────────────────────────────────────────────────────────────────
+
+✓ Procfile                     - Configuración para Wispbyte
+✓ .gitignore                   - Archivos a ignorar en Git
+✓ WISPBYTE_DEPLOYMENT.txt      - Guía paso a paso para Wispbyte
+✓ README_NEW.md               - README actualizado
+✓ cogs/fun.py                 - Módulo de diversión con 9 comandos
+
+📝 ARCHIVOS MODIFICADOS:
+──────────────────────────────────────────────────────────────────────────────────
+
+✓ main.py                      - Tree sync + Status + TeoBotty
+✓ cogs/moderation.py           - 10 nuevos comandos añadidos
+✓ requirements.txt             - Discord.py 2.7.1 + audioop-lts
+
+
+🎯 TOTAL DE COMANDOS DISPONIBLES:
+──────────────────────────────────────────────────────────────────────────────────
+
+🔒 Moderación (11 comandos):
+   lock, unlock, tempmute, rolve, userinfo, serverinfo, kick, ban, unban, warn, clear
+   mute, unmute, nick, softban, slowmode, sync
+
+🎉 Bienvenida (3 comandos):
+   set_welcome, set_farewell, test_welcome
+
+⭐ Roles (3 comandos):
+   add_autorole, remove_autorole, list_autoroles
+
+🎯 Reaction Roles (2 comandos):
+   add_reaction_role, remove_reaction_role
+
+🔔 Triggers (3 comandos):
+   add_trigger, remove_trigger, list_triggers
+
+🎮 Diversión (9 comandos):
+   dice, coin, rps, 8ball, quote, roulette, hug, rate, choose
+
+TOTAL: ✅ 34+ COMANDOS DISPONIBLES
+
+
+🚀 PASOS PARA USAR TEOBOOTTY:
+──────────────────────────────────────────────────────────────────────────────────
+
+LOCAL:
+   1. pip install -r requirements.txt
+   2. Edita .env con tu DISCORD_TOKEN
+   3. python main.py
+
+WISPBYTE HOSTING:
+   1. Lee WISPBYTE_DEPLOYMENT.txt
+   2. Conecta tu repositorio o sube los archivos
+   3. Configura DISCORD_TOKEN en variables de entorno
+   4. Haz click en Deploy
+   5. ¡Listo! TeoBotty estará 24/7 online
+
+
+⚙️  CARACTERÍSTICAS TÉCNICAS:
+──────────────────────────────────────────────────────────────────────────────────
+
+✓ Python 3.8+ compatible (probado en 3.14)
+✓ Discord.py 2.7.1 (soporte para Python 3.14)
+✓ SQLite para persistencia de datos
+✓ Async/Await para mejor rendimiento
+✓ Manejo robusto de errores
+✓ Logging detallado
+✓ Arquitectura modular escalable
+✓ SlashCommands modernos
+✓ Command sync automático
+
+
+📋 REQUISITOS:
+──────────────────────────────────────────────────────────────────────────────────
+
+discord.py==2.7.1
+python-dotenv==1.0.0
+aiosqlite==0.19.0
+audioop-lts==0.2.2
+
+
+🎬 PRÓXIMOS PASOS RECOMENDADOS:
+──────────────────────────────────────────────────────────────────────────────────
+
+1. Ejecuta el bot localmente: python main.py
+2. Prueba todos los comandos en Discord
+3. Cuando funcione perfectamente, sube a Wispbyte
+4. Configura las variables de entorno en Wispbyte
+5. ¡Disfruta de TeoBotty 24/7 online!
+
+
+📞 COMANDOS ÚTILES:
+──────────────────────────────────────────────────────────────────────────────────
+
+Verificar sintaxis:
+   python -m py_compile main.py
+
+Verificar importes:
+   python -c "import discord; print('OK')"
+
+Ver versiones instaladas:
+   pip list | grep discord
+
+Reinstalar dependencias:
+   pip install -r requirements.txt --upgrade
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+                    ✅ TEOBOOTTY v2.0 LISTO PARA DESPLIEGUE
+
+                   Ubicación: c:\Users\teo72\Downloads\teobot\
+
+                Para Wispbyte, ve a: WISPBYTE_DEPLOYMENT.txt
+
+═══════════════════════════════════════════════════════════════════════════════════

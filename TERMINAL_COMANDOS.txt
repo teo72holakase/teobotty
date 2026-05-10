@@ -1,0 +1,199 @@
+═══════════════════════════════════════════════════════════════════════════════
+       🤖 TEOBOT - INSTRUCCIONES EXACTAS DE TERMINAL (COPIA Y PEGA)
+═══════════════════════════════════════════════════════════════════════════════
+
+IMPORTANTE: Copia estas líneas exactamente como aparecen y pégalas en tu terminal
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PASO 1: INSTALAR DEPENDENCIAS
+═══════════════════════════════════════════════════════════════════════════════
+
+Copia y pega esta línea COMPLETA en tu terminal:
+
+cd c:\Users\teo72\Downloads\teobot && pip install -r requirements.txt
+
+Espera a ver: "Successfully installed discord.py-2.3.2 python-dotenv-1.0.0 aiosqlite-0.19.0"
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PASO 2: EDITAR ARCHIVO .env
+═══════════════════════════════════════════════════════════════════════════════
+
+Copia y pega esta línea en tu terminal:
+
+notepad .env
+
+Se abrirá un editor. Busca esta línea:
+   DISCORD_TOKEN=tu_token_aqui
+
+Y reemplázala por (sin comillas):
+   DISCORD_TOKEN=TU_TOKEN_DE_DISCORD_AQUI
+
+Guarda el archivo (Ctrl+S) y ciérralo.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PASO 3: EJECUTAR EL BOT
+═══════════════════════════════════════════════════════════════════════════════
+
+Copia y pega esta línea en tu terminal:
+
+python main.py
+
+Deberías ver:
+   ✅ Database initialized
+   ✅ Loaded cog: moderation
+   ✅ Loaded cog: welcome
+   ✅ Loaded cog: roles
+   ✅ Loaded cog: triggers
+   ✅ Bot logged in as TeoBot#XXXX
+
+¡EL BOT ESTÁ ONLINE!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+OPCIÓN ALTERNATIVA: CREAR ENTORNO VIRTUAL (Recomendado)
+═══════════════════════════════════════════════════════════════════════════════
+
+Si quieres usar entorno virtual, copia y pega EN ORDEN:
+
+1. Crear entorno:
+   cd c:\Users\teo72\Downloads\teobot && python -m venv venv
+
+2. Activar entorno:
+   .\venv\Scripts\Activate.ps1
+
+3. Instalar dependencias:
+   pip install -r requirements.txt
+
+4. Ejecutar bot:
+   python main.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+SOLUCIÓN RÁPIDA DE ERRORES
+═══════════════════════════════════════════════════════════════════════════════
+
+Si ves "python: command not found":
+───────────────────────────────────
+Reinstala Python desde: https://www.python.org
+IMPORTANTE: Marca "Add Python to PATH" durante la instalación
+
+
+Si ves "DISCORD_TOKEN not found":
+─────────────────────────────────
+Asegúrate que .env existe:
+   dir .env
+
+Si no existe, crea uno:
+   copy .env.example .env
+
+Luego edita con:
+   notepad .env
+
+
+Si ves "No module named 'discord'":
+───────────────────────────────────
+Instala las dependencias:
+   pip install -r requirements.txt
+
+
+Si ves "Connection refused":
+────────────────────────────
+Tu token no es válido. Obtén uno nuevo en:
+   https://discord.com/developers/applications
+
+
+═══════════════════════════════════════════════════════════════════════════════
+COMANDOS ÚTILES PARA VERIFICAR
+═══════════════════════════════════════════════════════════════════════════════
+
+Ver versión de Python:
+   python --version
+
+Ver librerías instaladas:
+   pip list
+
+Verificar que archivo .env existe:
+   dir .env
+
+Verificar que main.py existe:
+   dir main.py
+
+Verificar estructura del proyecto:
+   tree
+
+Ejecutar script de verificación:
+   python verificar.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PARA PARAR EL BOT
+═══════════════════════════════════════════════════════════════════════════════
+
+Presiona estas teclas mientras el bot está ejecutándose:
+   Ctrl+C
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CREAR ATAJO PARA EJECUTAR CON DOBLE CLIC (Windows)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Abre Notepad y copia esto:
+
+@echo off
+cd /d "%~dp0"
+if exist venv\Scripts\activate.bat (
+    call venv\Scripts\activate.bat
+)
+python main.py
+pause
+
+2. Guarda como "iniciar.bat" en la carpeta del proyecto
+
+3. Ahora puedes hacer doble clic en iniciar.bat para ejecutar el bot
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CÓMO OBTENER TU TOKEN DISCORD
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Abre: https://discord.com/developers/applications
+
+2. Haz clic en "New Application"
+
+3. Dale un nombre (ej: TeoBot)
+
+4. En el menú izquierdo, haz clic en "Bot"
+
+5. Haz clic en "Add Bot"
+
+6. Bajo "TOKEN", haz clic en "Copy" (copia tu token)
+
+7. EN DISCORD:
+   • Ve a "OAuth2" en el menú izquierdo
+   • Haz clic en "URL Generator"
+   • En "SCOPES", marca: [✓] bot
+   • En "PERMISSIONS", marca: [✓] administrator
+   • Copia la URL generada abajo
+
+8. Abre la URL en tu navegador
+
+9. Selecciona tu servidor y autoriza
+
+
+═══════════════════════════════════════════════════════════════════════════════
+RESUMEN RÁPIDO (3 COMANDOS)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. pip install -r requirements.txt
+2. notepad .env          (edita con tu token)
+3. python main.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+¿Listo? Copia y pega el PASO 1 en tu terminal.
+
+═══════════════════════════════════════════════════════════════════════════════
