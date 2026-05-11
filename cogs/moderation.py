@@ -19,20 +19,11 @@ class Moderation(commands.Cog):
     async def role_autocomplete(
         self, interaction: discord.Interaction, current: str
     ) -> list[app_commands.Choice[str]]:
-        """Autocomplete for roles"""
+        """Autocomplete for roles - returns role IDs as strings"""
         try:
-            roles = [r for r in interaction.guild.roles if current.lower() in r.name.lower()][:25]
+            roles = [r for r in interaction.guild.roles if current.lower() in r.name.lower() and not r.is_default()]
+            roles = roles[:25]
             return [app_commands.Choice(name=r.name, value=str(r.id)) for r in roles]
-        except:
-            return []
-
-    async def member_autocomplete(
-        self, interaction: discord.Interaction, current: str
-    ) -> list[app_commands.Choice[str]]:
-        """Autocomplete for members"""
-        try:
-            members = [m for m in interaction.guild.members if current.lower() in m.name.lower()][:25]
-            return [app_commands.Choice(name=m.name, value=str(m.id)) for m in members]
         except:
             return []
 
@@ -109,18 +100,23 @@ class Moderation(commands.Cog):
     )
     @app_commands.describe(
         user="Usuario",
-        role="Rol a dar/quitar"
+        role_id="ID del rol a dar/quitar (usa /roles para ver los IDs)"
     )
     @app_commands.checks.has_permissions(manage_roles=True)
-    @app_commands.autocomplete(role=role_autocomplete)
     async def role_give(
         self,
         interaction: discord.Interaction,
         user: discord.User,
-        role: discord.Role
+        role_id: str
     ):
         """Give or remove a role from a user"""
         try:
+            # Convertir role_id a entero y obtener el rol
+            role = interaction.guild.get_role(int(role_id))
+            if not role:
+                await interaction.response.send_message(f"❌ Rol no encontrado", ephemeral=True)
+                return
+                
             member = await interaction.guild.fetch_member(user.id)
             
             if role in member.roles:
@@ -135,8 +131,42 @@ class Moderation(commands.Cog):
                     f"✅ Rol {role.mention} otorgado a {user.mention}",
                     ephemeral=True
                 )
+        except ValueError:
+            await interaction.response.send_message(f"❌ ID de rol inválido", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
+
+    @app_commands.command(
+        name="roles",
+        description="📋 Muestra la lista de roles del servidor con sus IDs"
+    )
+    async def list_roles(self, interaction: discord.Interaction):
+        """List all roles in the server with their IDs"""
+        roles = sorted(interaction.guild.roles, key=lambda r: r.position, reverse=True)
+        
+        embed = discord.Embed(
+            title=f"Roles en {interaction.guild.name}",
+            color=discord.Color.blue()
+        )
+        
+        role_list = []
+        for role in roles:
+            if not role.is_default():
+                role_list.append(f"**{role.name}** - ID: `{role.id}`")
+        
+        if role_list:
+            # Dividir en chunks si hay muchos roles
+            chunks = [role_list[i:i+20] for i in range(0, len(role_list), 20)]
+            for i, chunk in enumerate(chunks):
+                embed.add_field(
+                    name=f"Roles {f'({i+1})' if len(chunks) > 1 else ''}",
+                    value="\n".join(chunk),
+                    inline=False
+                )
+        else:
+            embed.description = "No hay roles personalizados"
+        
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @app_commands.command(
         name="userinfo",
@@ -292,6 +322,8 @@ class Moderation(commands.Cog):
                 f"⚠️ {user.mention} ha sido advertido. Razón: {reason or 'N/A'}",
                 ephemeral=True
             )
+        except discord.Forbidden:
+            await interaction.response.send_message(f"⚠️ No se pudo enviar DM a {user.mention}, pero se registró la advertencia.", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
 
@@ -415,16 +447,18 @@ class Moderation(commands.Cog):
     )
     @app_commands.describe(guild_id="ID opcional del servidor para sincronizar")
     @app_commands.checks.has_permissions(administrator=True)
-    async def sync(self, interaction: discord.Interaction, guild_id: Optional[int] = None):
+    async def sync(self, interaction: discord.Interaction, guild_id: Optional[str] = None):
         """Sync commands to Discord (global or guild)"""
         try:
             if guild_id:
-                guild = discord.Object(id=guild_id)
+                guild = discord.Object(id=int(guild_id))
                 synced = await self.bot.tree.sync(guild=guild)
                 await interaction.response.send_message(f"✅ Sincronizado {len(synced)} comandos en el servidor {guild_id}", ephemeral=True)
             else:
                 synced = await self.bot.tree.sync()
                 await interaction.response.send_message(f"✅ Sincronizado globalmente {len(synced)} comandos", ephemeral=True)
+        except ValueError:
+            await interaction.response.send_message(f"❌ ID de servidor inválido", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
 
@@ -432,7 +466,7 @@ class Moderation(commands.Cog):
     async def check_mutes(self):
         """Check if any mutes have expired"""
         # Placeholder for future persistent mute handling
-        return
+        pass
 
     @check_mutes.before_loop
     async def before_check_mutes(self):
