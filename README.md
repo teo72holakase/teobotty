@@ -1,6 +1,6 @@
 # 🤖 TeoBotty - Discord Bot Completo
 
-> Un bot de Discord modular y avanzado con sistema de tickets profesional, moderación, roles, sugerencias, votaciones y mucho más.
+> Un bot de Discord modular y avanzado con **sistema de tickets profesional completo**, roles, sugerencias, votaciones y mucho más.
 
 ## 📋 Tabla de Contenidos
 
@@ -8,8 +8,7 @@
 - [⚙️ Configuración](#️-configuración)
 - [📚 Comandos](#-comandos)
   - [🎫 Sistema de Tickets](#-sistema-de-tickets)
-  - [👮 Moderación](#-moderación)
-  - [👥 Roles y Autoroles](#-roles-y-autoroles)
+  - [ Roles y Autoroles](#-roles-y-autoroles)
   - [💬 Bienvenida y Despedida](#-bienvenida-y-despedida)
   - [🎯 Triggers](#-triggers)
   - [🎉 Diversión](#-diversión)
@@ -104,11 +103,16 @@ Sistema completo de tickets similar a TicketKing/Tickets.gg
 
 **Paso 2:** `/configure_ticket_panel <selection_type> <ticket_config>`
 - Configura cómo seleccionar tickets
-- `selection_type`: `button`, `list`, o `emoji`
-- `ticket_config`: Formato depende del tipo:
-  - **Emoji**: `ID:emoji` (ej: `1:🎫,2:📋`)
-  - **Botón**: `ID:emoji:texto:color` (ej: `1:🎫:Crear Ticket:primary`)
-  - **Lista**: `ID:posición:emoji:texto` (ej: `1:1:🎫:Reportes`)
+- `selection_type`: **Lista desplegable** con 3 opciones:
+  - 🎫 Reacciones (Emoji)
+  - 🔘 Botones Interactivos
+  - 📋 Lista Desplegable
+- `ticket_config`: Formato depende del tipo seleccionado:
+  - **🎫 Emoji**: `ID:emoji` (ej: `1:🎫,2:📋`)
+  - **🔘 Botón**: `ID:emoji:texto:color` (ej: `1:🎫:Crear Ticket:primary`)
+  - **📋 Lista**: `ID:posición:emoji:texto` (ej: `1:1:🎫:Reportes`)
+
+> **💡 Nota:** Los paneles de tickets se muestran públicamente en el canal seleccionado para que todos los usuarios puedan verlos e interactuar con ellos.
 
 #### Gestión de Tickets
 - `/close_ticket`
@@ -117,11 +121,7 @@ Sistema completo de tickets similar a TicketKing/Tickets.gg
 - `/add_to_ticket <user>`
   - Añade un usuario al ticket actual
 
-### 👮 Moderación
-
-*Nota: El cog de moderación fue removido. Los comandos de moderación están disponibles en otros cogs.*
-
-### 👥 Roles y Autoroles
+###  Roles y Autoroles
 
 #### Autoroles
 - `/add_autorole <role>`
@@ -360,24 +360,6 @@ INFO:root:✅ Synced X slash commands
 
 ## 📖 Comandos Disponibles
 
-### 🔒 Moderación (`/lock`, `/unlock`, `/tempmute`, `/rolve`, `/userinfo`, `/serverinfo`, y más)
-
-```bash
-/lock                          # Bloquea el canal actual
-/unlock                        # Desbloquea el canal actual
-/tempmute <usuario> <segundos> [razón]   # Silencia temporalmente
-/rolve <usuario> <rol>        # Da/quita un rol
-/userinfo [usuario]           # Información del usuario
-/serverinfo                   # Información del servidor
-/mute <usuario> [segundos]    # Silencia un usuario
-/unmute <usuario>             # Desmutea un usuario
-/kick <usuario> [razón]       # Expulsa un usuario
-/ban <usuario> [razón]        # Banea un usuario
-/unban <usuario>              # Desbanea un usuario
-/warn <usuario> [razón]       # Advierte un usuario
-/clear <cantidad>             # Elimina mensajes
-```
-
 ### 🎉 Bienvenida (`/set_welcome`, `/set_farewell`, `/test_welcome`)
 
 ```bash
@@ -445,11 +427,12 @@ teobot/
 ├── bot_data.db              # Base de datos (se crea automáticamente)
 └── cogs/
     ├── __init__.py
-    ├── moderation.py         # 17 comandos de moderación
+    ├── tickets.py            # Sistema completo de tickets
     ├── welcome.py            # Sistema de bienvenida
     ├── roles.py              # Sistema de roles y autoroles
     ├── triggers.py           # Respuestas automáticas
-    └── fun.py                # 9 comandos de diversión
+    ├── social.py             # Sugerencias y votaciones
+    └── info.py               # Comandos informativos
 ```
 
 ---

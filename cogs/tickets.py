@@ -205,9 +205,14 @@ class Tickets(commands.Cog):
         name="configure_ticket_panel",
         description="🎫 Configura las opciones del panel de tickets (Paso 2)"
     )
+    @app_commands.choices(selection_type=[
+        app_commands.Choice(name="🎫 Reacciones (Emoji)", value="emoji"),
+        app_commands.Choice(name="🔘 Botones Interactivos", value="button"),
+        app_commands.Choice(name="📋 Lista Desplegable", value="list")
+    ])
     @app_commands.describe(
-        selection_type="Tipo de selección: button, list, o emoji",
-        ticket_config="Configuración de tickets (formato depende del tipo seleccionado)"
+        selection_type="Elige cómo los usuarios seleccionarán el tipo de ticket",
+        ticket_config="Configuración según el tipo:\n• Emoji: ID:emoji (ej: 1:🎫,2:📋)\n• Botón: ID:emoji:texto:color (ej: 1:🎫:Crear Ticket:primary)\n• Lista: ID:posición:emoji:texto (ej: 1:1:🎫:Reportes)"
     )
     @app_commands.checks.has_permissions(administrator=True)
     async def configure_ticket_panel_step2(
@@ -218,11 +223,11 @@ class Tickets(commands.Cog):
     ):
         try:
             if not hasattr(self.bot, 'temp_panel_data') or interaction.user.id not in self.bot.temp_panel_data:
-                await interaction.response.send_message("❌ Primero completa el paso 1 con /create_ticket_panel", ephemeral=True)
+                await interaction.response.send_message("❌ Primero completa el paso 1 con /create_ticket_panel", ephemeral=False)
                 return
 
             if selection_type not in ['button', 'list', 'emoji']:
-                await interaction.response.send_message("❌ Tipo de selección debe ser: button, list, o emoji", ephemeral=True)
+                await interaction.response.send_message("❌ Tipo de selección debe ser: button, list, o emoji", ephemeral=False)
                 return
 
             temp_data = self.bot.temp_panel_data[interaction.user.id]
@@ -235,7 +240,7 @@ class Tickets(commands.Cog):
                 for config in ticket_config.split(','):
                     parts = config.strip().split(':')
                     if len(parts) != 2:
-                        await interaction.response.send_message(f"❌ Formato inválido para emoji: {config}. Usa ID:emoji", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Formato inválido para emoji: {config}. Usa ID:emoji", ephemeral=False)
                         return
 
                     tt_id, emoji = parts
@@ -244,7 +249,7 @@ class Tickets(commands.Cog):
                     # Validate ticket type exists
                     tt = await self.db.get_ticket_type(tt_id)
                     if not tt:
-                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=False)
                         return
 
                     options.append({
@@ -258,7 +263,7 @@ class Tickets(commands.Cog):
                 for config in ticket_config.split(','):
                     parts = config.strip().split(':')
                     if len(parts) != 4:
-                        await interaction.response.send_message(f"❌ Formato inválido para botón: {config}. Usa ID:emoji:texto:color", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Formato inválido para botón: {config}. Usa ID:emoji:texto:color", ephemeral=False)
                         return
 
                     tt_id, emoji, button_text, btn_color = parts
@@ -267,11 +272,11 @@ class Tickets(commands.Cog):
                     # Validate ticket type exists
                     tt = await self.db.get_ticket_type(tt_id)
                     if not tt:
-                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=False)
                         return
 
                     if btn_color not in ['primary', 'secondary', 'success', 'danger']:
-                        await interaction.response.send_message(f"❌ Color de botón inválido: {btn_color}", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Color de botón inválido: {btn_color}", ephemeral=False)
                         return
 
                     options.append({
@@ -287,7 +292,7 @@ class Tickets(commands.Cog):
                 for config in ticket_config.split(','):
                     parts = config.strip().split(':')
                     if len(parts) != 4:
-                        await interaction.response.send_message(f"❌ Formato inválido para lista: {config}. Usa ID:posición:emoji:texto", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Formato inválido para lista: {config}. Usa ID:posición:emoji:texto", ephemeral=False)
                         return
 
                     tt_id, position, emoji, option_text = parts
@@ -297,12 +302,12 @@ class Tickets(commands.Cog):
                     # Validate ticket type exists
                     tt = await self.db.get_ticket_type(tt_id)
                     if not tt:
-                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=False)
                         return
 
                     # Check for duplicate positions
                     if position in position_tracker:
-                        await interaction.response.send_message(f"❌ Posición {position} duplicada", ephemeral=True)
+                        await interaction.response.send_message(f"❌ Posición {position} duplicada", ephemeral=False)
                         return
                     position_tracker[position] = True
 
@@ -315,6 +320,15 @@ class Tickets(commands.Cog):
 
                 # Sort by position
                 options.sort(key=lambda x: x['position'])
+
+            # Create the embed
+            embed = discord.Embed(
+                title=temp_data['embed_title'],
+                description=temp_data['embed_description'],
+                color=int(temp_data['embed_color'][1:], 16)
+            )
+            if temp_data['embed_image']:
+                embed.set_image(url=temp_data['embed_image'])
 
             # Add selection info to embed for emoji type
             if selection_type == 'emoji':
@@ -331,7 +345,7 @@ class Tickets(commands.Cog):
             # Create the message with appropriate components
             channel = self.bot.get_channel(temp_data['channel_id'])
             if not channel:
-                await interaction.response.send_message("❌ Canal no encontrado", ephemeral=True)
+                await interaction.response.send_message("❌ Canal no encontrado", ephemeral=False)
                 return
 
             if selection_type == 'button':
@@ -363,10 +377,10 @@ class Tickets(commands.Cog):
             # Clean up temp data
             del self.bot.temp_panel_data[interaction.user.id]
 
-            await interaction.response.send_message(f"✅ Panel creado exitosamente (ID: {panel_id})", ephemeral=True)
+            await interaction.response.send_message(f"✅ Panel creado exitosamente (ID: {panel_id})", ephemeral=False)
 
         except Exception as e:
-            await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
+            await interaction.response.send_message(f"❌ Error: {e}", ephemeral=False)
 
     # Event listeners for ticket creation
     @commands.Cog.listener()
