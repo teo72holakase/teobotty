@@ -51,6 +51,40 @@ class Database:
                     response TEXT NOT NULL,
                     UNIQUE(guild_id, keyword)
                 );
+
+                CREATE TABLE IF NOT EXISTS ticket_types (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    guild_id INTEGER,
+                    name TEXT NOT NULL,
+                    mention_roles TEXT,  -- JSON array of role IDs
+                    close_permissions TEXT,  -- JSON array of role IDs
+                    log_channel_id INTEGER,
+                    archive_channel_id INTEGER,
+                    category_id INTEGER  -- Discord category ID
+                );
+
+                CREATE TABLE IF NOT EXISTS ticket_panels (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    guild_id INTEGER,
+                    channel_id INTEGER,
+                    message_id INTEGER,
+                    embed_title TEXT,
+                    embed_description TEXT,
+                    embed_color TEXT,
+                    embed_image TEXT,
+                    selection_type TEXT,  -- 'button', 'list', 'emoji'
+                    ticket_options TEXT  -- JSON array of {type_id, position, emoji, button_color}
+                );
+
+                CREATE TABLE IF NOT EXISTS active_tickets (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    guild_id INTEGER,
+                    channel_id INTEGER,
+                    user_id INTEGER,
+                    ticket_type_id INTEGER,
+                    created_at TEXT,
+                    status TEXT  -- 'open', 'closed'
+                );
             """)
             await db.commit()
 
@@ -215,5 +249,116 @@ class Database:
             cursor = await db.execute(
                 "SELECT keyword, response FROM triggers WHERE guild_id = ?",
                 (guild_id,)
+            )
+            return await cursor.fetchall()
+
+    # Ticket Types
+    async def create_ticket_type(self, guild_id: int, name: str, mention_roles: str, close_permissions: str, log_channel_id: int, archive_channel_id: int, category_id: int) -> int:
+        """Create a new ticket type and return its ID"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                """INSERT INTO ticket_types (guild_id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (guild_id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id)
+            )
+            await db.commit()
+            return cursor.lastrowid
+
+    async def get_ticket_types(self, guild_id: int) -> List[Tuple]:
+        """Get all ticket types for a guild"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id FROM ticket_types WHERE guild_id = ?",
+                (guild_id,)
+            )
+            return await cursor.fetchall()
+
+    async def get_ticket_type(self, ticket_type_id: int) -> Optional[Tuple]:
+        """Get a specific ticket type"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id FROM ticket_types WHERE id = ?",
+                (ticket_type_id,)
+            )
+            return await cursor.fetchone()
+
+    async def delete_ticket_type(self, ticket_type_id: int):
+        """Delete a ticket type"""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("DELETE FROM ticket_types WHERE id = ?", (ticket_type_id,))
+            await db.commit()
+
+    # Ticket Panels
+    async def create_ticket_panel(self, guild_id: int, channel_id: int, message_id: int, embed_title: str, embed_description: str, embed_color: str, embed_image: str, selection_type: str, ticket_options: str) -> int:
+        """Create a new ticket panel and return its ID"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                """INSERT INTO ticket_panels (guild_id, channel_id, message_id, embed_title, embed_description, embed_color, embed_image, selection_type, ticket_options)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (guild_id, channel_id, message_id, embed_title, embed_description, embed_color, embed_image, selection_type, ticket_options)
+            )
+            await db.commit()
+            return cursor.lastrowid
+
+    async def get_ticket_panels(self, guild_id: int) -> List[Tuple]:
+        """Get all ticket panels for a guild"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT id, channel_id, message_id, embed_title, embed_description, embed_color, embed_image, selection_type, ticket_options FROM ticket_panels WHERE guild_id = ?",
+                (guild_id,)
+            )
+            return await cursor.fetchall()
+
+    async def get_ticket_panel_by_message(self, message_id: int) -> Optional[Tuple]:
+        """Get ticket panel by message ID"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT id, guild_id, channel_id, embed_title, embed_description, embed_color, embed_image, selection_type, ticket_options FROM ticket_panels WHERE message_id = ?",
+                (message_id,)
+            )
+            return await cursor.fetchone()
+
+    async def delete_ticket_panel(self, panel_id: int):
+        """Delete a ticket panel"""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("DELETE FROM ticket_panels WHERE id = ?", (panel_id,))
+            await db.commit()
+
+    # Active Tickets
+    async def create_ticket(self, guild_id: int, channel_id: int, user_id: int, ticket_type_id: int, created_at: str) -> int:
+        """Create a new active ticket and return its ID"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                """INSERT INTO active_tickets (guild_id, channel_id, user_id, ticket_type_id, created_at, status)
+                   VALUES (?, ?, ?, ?, ?, 'open')""",
+                (guild_id, channel_id, user_id, ticket_type_id, created_at)
+            )
+            await db.commit()
+            return cursor.lastrowid
+
+    async def get_active_ticket(self, channel_id: int) -> Optional[Tuple]:
+        """Get active ticket by channel ID"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT id, guild_id, user_id, ticket_type_id, created_at, status FROM active_tickets WHERE channel_id = ? AND status = 'open'",
+                (channel_id,)
+            )
+            return await cursor.fetchone()
+
+    async def close_ticket(self, ticket_id: int):
+        """Close a ticket"""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "UPDATE active_tickets SET status = 'closed' WHERE id = ?",
+                (ticket_id,)
+            )
+            await db.commit()
+
+    async def get_user_tickets(self, user_id: int, guild_id: int) -> List[Tuple]:
+        """Get all tickets for a user in a guild"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT id, channel_id, ticket_type_id, created_at, status FROM active_tickets WHERE user_id = ? AND guild_id = ?",
+                (user_id, guild_id)
             )
             return await cursor.fetchall()

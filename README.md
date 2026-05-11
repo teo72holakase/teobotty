@@ -1,102 +1,350 @@
-# 🤖 TeoBotty - Discord Bot en Python
+# 🤖 TeoBotty - Discord Bot Completo
 
-Bot de Discord modular y escalable construido con **discord.py**, **Cogs**, **SlashCommands** y **SQLite**.
+> Un bot de Discord modular y avanzado con sistema de tickets profesional, moderación, roles, sugerencias, votaciones y mucho más.
 
-## 📋 Características
+## 📋 Tabla de Contenidos
 
-✅ **Sistema de Bienvenida/Despedida** - Mensajes personalizados con variables
-✅ **Moderación** - Bloqueo de canales, silencio temporal, gestión de roles, información de usuario/servidor
-✅ **Autoroles** - Asignar roles automáticamente al entrar
-✅ **Reaction Roles** - Menús interactivos con reacciones
-✅ **Triggers** - Respuestas automáticas a palabras clave configurables
-✅ **Diversión** - Comandos entretenidos (dice, 8ball, coin, rps, etc.)
-✅ **Arquitectura Modular** - Fácil de extender con nuevos Cogs
-✅ **Base de Datos SQLite** - Persistencia local de configuraciones
-✅ **Estado personalizado** - Viendo JoJos Bizarre Adventure 👑
+- [🚀 Instalación](#-instalación)
+- [⚙️ Configuración](#️-configuración)
+- [📚 Comandos](#-comandos)
+  - [🎫 Sistema de Tickets](#-sistema-de-tickets)
+  - [👮 Moderación](#-moderación)
+  - [👥 Roles y Autoroles](#-roles-y-autoroles)
+  - [💬 Bienvenida y Despedida](#-bienvenida-y-despedida)
+  - [🎯 Triggers](#-triggers)
+  - [🎉 Diversión](#-diversión)
+  - [💡 Sugerencias](#-sugerencias)
+  - [🗳️ Votaciones](#️-votaciones)
+  - [ℹ️ Información](#️-información)
+- [🔧 Solución de Problemas](#-solución-de-problemas)
+- [📁 Estructura del Proyecto](#-estructura-del-proyecto)
+- [🤝 Contribución](#-contribución)
 
 ---
 
-## 🚀 Instalación Rápida
+## 🚀 Instalación
 
-### 1️⃣ Clonar/Descargar el Proyecto
-```bash
-cd c:\Users\teo72\Downloads\teobot
-```
+### Requisitos Previos
+- Python 3.8 o superior
+- Token de bot de Discord
 
-### 2️⃣ Crear Entorno Virtual (Recomendado)
-```bash
-python -m venv venv
-```
+### Pasos de Instalación
 
-**Activar el entorno:**
+1. **Clona o descarga el proyecto**
+   ```bash
+   cd c:\Users\teo72\Downloads\teobot
+   ```
 
-**Windows (CMD):**
-```bash
-venv\Scripts\activate
-```
+2. **Instala las dependencias**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-**Windows (PowerShell):**
-```powershell
-.\venv\Scripts\Activate.ps1
-```
+3. **Configura el token de Discord**
+   - Crea un archivo `.env` en la raíz del proyecto
+   - Agrega tu token:
+   ```
+   DISCORD_TOKEN=tu_token_aqui
+   DATABASE_PATH=./bot_data.db
+   ```
 
-**Linux/Mac:**
-```bash
-source venv/bin/activate
-```
+4. **Ejecuta el bot**
+   ```bash
+   python main.py
+   ```
 
-### 3️⃣ Instalar Dependencias
-```bash
-pip install -r requirements.txt
-```
+### Obtener Token de Discord
+1. Ve a [Discord Developer Portal](https://discord.com/developers/applications)
+2. Crea una nueva aplicación
+3. Ve a la pestaña "Bot" y crea un bot
+4. Copia el token
+5. Invita el bot a tu servidor con permisos de administrador
 
-**Salida esperada:**
-```
-Successfully installed discord.py-2.7.1 python-dotenv-1.0.0 aiosqlite-0.19.0 audioop-lts-0.2.2
-```
+---
 
-### 4️⃣ Configurar el Token
+## ⚙️ Configuración
 
-1. Copia `.env.example` a `.env`:
-```bash
-copy .env.example .env
-```
-
-2. Abre `.env` y reemplaza `tu_token_aqui` con tu token de Discord:
-```
+### Variables de Entorno (.env)
+```env
 DISCORD_TOKEN=tu_token_real_aqui
 DATABASE_PATH=./bot_data.db
 ```
 
-**¿Cómo obtener el token?**
-1. Ve a https://discord.com/developers/applications
-2. Crea una "New Application"
-3. Ve a "Bot" → "Add Bot"
-4. Copia el token bajo "TOKEN"
-5. En "OAuth2" → "URL Generator":
-   - Selecciona scopes: `bot`
-   - Selecciona permisos: `administrator` (o los que necesites)
-   - Copia la URL generada y abre en el navegador para invitar el bot
+### Permisos Recomendados del Bot
+- Administrador (para funcionalidades completas)
+- O permisos específicos:
+  - Gestionar roles
+  - Gestionar canales
+  - Gestionar mensajes
+  - Banear miembros
+  - Expulsar miembros
+  - Moderar miembros
 
-### 5️⃣ Ejecutar el Bot
+---
 
-**Opción 1: Desde CMD/PowerShell**
+## 📚 Comandos
+
+### 🎫 Sistema de Tickets
+
+Sistema completo de tickets similar a TicketKing/Tickets.gg
+
+#### Configuración de Tipos de Tickets
+- `/create_ticket_type <name> <mention_roles> <close_permissions> <log_channel> <archive_channel> <category>`
+  - Crea un nuevo tipo de ticket
+  - `mention_roles`: IDs de roles separados por comas
+  - `close_permissions`: IDs de roles que pueden cerrar tickets
+
+- `/list_ticket_types`
+  - Muestra todos los tipos de ticket configurados
+
+#### Creación de Paneles de Tickets (2 pasos)
+**Paso 1:** `/create_ticket_panel <channel> <title> <description> <color> [image]`
+- Configura el embed del panel
+- `color`: Color en formato hex (#FF0000)
+
+**Paso 2:** `/configure_ticket_panel <selection_type> <ticket_options>`
+- Configura cómo seleccionar tickets
+- `selection_type`: `button`, `list`, o `emoji`
+- `ticket_options`: Formato `ID:posición:emoji:color` (ej: `1:1:🎫:primary,2:2:📋:secondary`)
+
+#### Gestión de Tickets
+- `/close_ticket`
+  - Cierra el ticket actual (verifica permisos)
+
+- `/add_to_ticket <user>`
+  - Añade un usuario al ticket actual
+
+- `/archive_ticket`
+  - Archiva el ticket con transcript al canal configurado
+
+### 👮 Moderación
+
+*Nota: El cog de moderación fue removido. Los comandos de moderación están disponibles en otros cogs.*
+
+### 👥 Roles y Autoroles
+
+#### Autoroles
+- `/add_autorole <role>`
+  - Añade un rol que se asigna automáticamente a nuevos miembros
+
+- `/remove_autorole <role>`
+  - Elimina un autorol
+
+- `/list_autoroles`
+  - Muestra todos los autoroles configurados
+
+#### Reaction Roles
+- `/add_reaction_role <message_id> <emoji> <role>`
+  - Crea un rol que se asigna al reaccionar a un mensaje
+  - El bot añade automáticamente el emoji al mensaje
+
+- `/remove_reaction_role <message_id> <emoji>`
+  - Elimina un reaction role
+
+### 💬 Bienvenida y Despedida
+
+- `/set_welcome <channel> <message>`
+  - Configura mensaje de bienvenida
+  - Variables disponibles: `{user}`, `{username}`, `{guild}`
+
+- `/set_farewell <channel> <message>`
+  - Configura mensaje de despedida
+  - Variables disponibles: `{user}`, `{username}`, `{guild}`
+
+- `/test_welcome`
+  - Prueba el mensaje de bienvenida
+
+### 🎯 Triggers
+
+Sistema de respuestas automáticas por palabras clave
+
+- `/add_trigger <keyword> <response>`
+  - Añade una respuesta automática
+  - Variables disponibles: `{user}`, `{username}`, `{message}`
+
+- `/remove_trigger <keyword>`
+  - Elimina un trigger
+
+- `/list_triggers`
+  - Muestra todos los triggers configurados
+
+### 🎉 Diversión
+
+- `/dice`
+  - Lanza un dado (1-6)
+
+- `/coin`
+  - Lanza una moneda (Cara/Cruz)
+
+- `/rps <choice>`
+  - Piedra, papel o tijeras contra el bot
+
+- `/8ball <question>`
+  - Pregunta a la bola mágica del destino
+
+- `/quote`
+  - Cita motivacional aleatoria
+
+- `/roulette`
+  - Ruleta rusa (50% de probabilidad)
+
+- `/hug <user>`
+  - Abraza a un usuario
+
+- `/rate <target>`
+  - Califica algo o alguien (1-10)
+
+- `/choose <options>`
+  - Elige aleatoriamente entre opciones
+
+### 💡 Sugerencias
+
+Sistema de sugerencias con embeds automáticos
+
+- `/set_suggestions <channel>`
+  - Configura el canal de sugerencias
+
+- `/unset_suggestions`
+  - Elimina el canal de sugerencias
+
+**Funcionamiento automático:**
+- Los mensajes en el canal configurado se convierten automáticamente en embeds
+- Se añade el autor, foto de perfil y contenido
+- Reacciones automáticas: ⬆️ (aprobar) y ⬇️ (rechazar)
+- Soporte para imágenes adjuntas
+
+### 🗳️ Votaciones
+
+- `/create_poll <question> <options> [everyone] [image1] [image2] [image3]`
+  - Crea una votación con múltiples opciones
+  - `options`: Separadas por `;` (ej: `Sí;No;Tal vez`)
+  - `everyone`: `true` para mencionar @everyone
+  - Soporte hasta 3 imágenes
+
+### ℹ️ Información
+
+- `/userinfo [user]`
+  - Información detallada de un usuario
+  - Roles, fecha de unión, cuenta creada, etc.
+
+- `/serverinfo`
+  - Información del servidor
+  - Miembros, canales, roles, nivel de boost, etc.
+
+---
+
+## 🔧 Solución de Problemas
+
+### Problemas Comunes
+
+#### ❌ "ModuleNotFoundError: No module named 'discord'"
+**Solución:**
 ```bash
-python main.py
+pip install -r requirements.txt
 ```
 
-**Opción 2: Crear un batch (Windows)**
+#### ❌ "No module named 'audioop'" (Python 3.14+)
+**Solución:** Las dependencias ya están actualizadas en `requirements.txt` para ser compatibles.
 
-Crea un archivo `run.bat` en la carpeta del proyecto:
-```batch
-@echo off
-python main.py
-pause
+#### ❌ "DISCORD_TOKEN not found in .env file"
+**Solución:**
+1. Asegúrate de que el archivo `.env` existe
+2. Verifica que contiene: `DISCORD_TOKEN=tu_token_real`
+3. Reinicia el bot
+
+#### ❌ Los comandos no aparecen en Discord
+**Solución:**
+- Espera hasta 1 hora para que Discord sincronice los comandos
+- Reinicia el bot
+- Verifica que el bot tiene permisos de aplicación.commands
+
+#### ❌ Error de permisos en comandos
+**Solución:**
+- Asegúrate de que el bot tiene los permisos necesarios
+- Para comandos administrativos, el usuario debe tener permisos de administrador
+
+#### ❌ El bot no responde
+**Solución:**
+1. Verifica que el token es correcto
+2. Comprueba que el bot está online en Discord
+3. Revisa los logs de la consola para errores
+
+#### ❌ Problemas con la base de datos
+**Solución:**
+- Elimina `bot_data.db` y reinicia el bot (se recreará automáticamente)
+- Asegúrate de que la carpeta tiene permisos de escritura
+
+### Comandos de Debug
+
+Ejecuta `python verificar.py` para verificar que todo está configurado correctamente.
+
+### Logs y Debugging
+
+El bot muestra logs detallados en la consola:
+- ✅ Cogs cargados exitosamente
+- ✅ Base de datos inicializada
+- ✅ Comandos sincronizados
+- ❌ Errores específicos
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+teobot/
+├── main.py              # Archivo principal del bot
+├── database.py          # Gestión de base de datos SQLite
+├── verificar.py         # Script de verificación
+├── requirements.txt     # Dependencias Python
+├── Procfile            # Para deployment en hosting
+├── .env                # Variables de entorno (crear)
+├── .env.example        # Plantilla de variables
+├── .gitignore          # Archivos ignorados por Git
+├── README.md           # Esta documentación
+└── cogs/               # Módulos del bot
+    ├── fun.py          # Comandos de diversión
+    ├── info.py         # Comandos informativos
+    ├── roles.py        # Gestión de roles
+    ├── social.py       # Sugerencias y votaciones
+    ├── tickets.py      # Sistema de tickets
+    ├── triggers.py     # Respuestas automáticas
+    ├── welcome.py      # Bienvenida y despedida
+    └── __init__.py     # Inicialización de cogs
 ```
 
-Luego solo abre `run.bat` haciendo doble clic.
+---
 
-**Salida esperada:**
+## 🤝 Contribución
+
+### Agregar Nuevos Cogs
+1. Crea un nuevo archivo en `cogs/nombre_cog.py`
+2. Implementa la clase cog heredando de `commands.Cog`
+3. Agrega la función `setup(bot)` al final
+4. El bot cargará automáticamente el nuevo cog
+
+### Convenciones de Código
+- Usa comandos slash (`app_commands`) para nueva funcionalidad
+- Incluye descripciones detalladas en los comandos
+- Maneja errores apropiadamente
+- Usa embeds para respuestas visuales
+- Documenta las funciones con docstrings
+
+### Reportar Bugs
+Si encuentras un bug, incluye:
+- Pasos para reproducirlo
+- Mensaje de error completo
+- Versión de Python y discord.py
+- Sistema operativo
+
+---
+
+## 📄 Licencia
+
+Este proyecto es de uso personal. Siéntete libre de modificarlo y adaptarlo a tus necesidades.
+
+---
+
+**TeoBotty** - Bot de Discord moderno, modular y escalable 🤖✨
 ```
 INFO:root:✅ Database initialized
 INFO:root:✅ Loaded cog: moderation

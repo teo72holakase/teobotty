@@ -23,6 +23,8 @@ def main():
         "cogs/roles.py existe": os.path.exists('cogs/roles.py'),
         "cogs/triggers.py existe": os.path.exists('cogs/triggers.py'),
         "cogs/social.py existe": os.path.exists('cogs/social.py'),
+        "cogs/info.py existe": os.path.exists('cogs/info.py'),
+        "cogs/tickets.py existe": os.path.exists('cogs/tickets.py'),
     }
     
     print("📋 VERIFICACIONES:\n")
