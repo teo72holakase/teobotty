@@ -102,10 +102,13 @@ Sistema completo de tickets similar a TicketKing/Tickets.gg
 - Configura el embed del panel
 - `color`: Color en formato hex (#FF0000)
 
-**Paso 2:** `/configure_ticket_panel <selection_type> <ticket_options>`
+**Paso 2:** `/configure_ticket_panel <selection_type> <ticket_config>`
 - Configura cómo seleccionar tickets
 - `selection_type`: `button`, `list`, o `emoji`
-- `ticket_options`: Formato `ID:posición:emoji:color` (ej: `1:1:🎫:primary,2:2:📋:secondary`)
+- `ticket_config`: Formato depende del tipo:
+  - **Emoji**: `ID:emoji` (ej: `1:🎫,2:📋`)
+  - **Botón**: `ID:emoji:texto:color` (ej: `1:🎫:Crear Ticket:primary`)
+  - **Lista**: `ID:posición:emoji:texto` (ej: `1:1:🎫:Reportes`)
 
 #### Gestión de Tickets
 - `/close_ticket`
@@ -113,9 +116,6 @@ Sistema completo de tickets similar a TicketKing/Tickets.gg
 
 - `/add_to_ticket <user>`
   - Añade un usuario al ticket actual
-
-- `/archive_ticket`
-  - Archiva el ticket con transcript al canal configurado
 
 ### 👮 Moderación
 

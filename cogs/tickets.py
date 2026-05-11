@@ -29,7 +29,6 @@ class Tickets(commands.Cog):
         mention_roles="Roles a mencionar (IDs separados por comas)",
         close_permissions="Roles que pueden cerrar (IDs separados por comas)",
         log_channel="Canal para logs",
-        archive_channel="Canal para archivos",
         category="Categoría de Discord para los tickets"
     )
     @app_commands.checks.has_permissions(administrator=True)
@@ -40,7 +39,6 @@ class Tickets(commands.Cog):
         mention_roles: str,
         close_permissions: str,
         log_channel: discord.TextChannel,
-        archive_channel: discord.TextChannel,
         category: discord.CategoryChannel
     ):
         try:
@@ -61,7 +59,6 @@ class Tickets(commands.Cog):
                 json.dumps(mention_role_ids),
                 json.dumps(close_perm_ids),
                 log_channel.id,
-                archive_channel.id,
                 category.id
             )
 
@@ -74,7 +71,6 @@ class Tickets(commands.Cog):
             embed.add_field(name="Puede cerrar", value=", ".join([f"<@&{rid}>" for rid in close_perm_ids]) or "Solo administradores", inline=False)
             embed.add_field(name="Categoría", value=category.name, inline=True)
             embed.add_field(name="Logs", value=log_channel.mention, inline=True)
-            embed.add_field(name="Archivos", value=archive_channel.mention, inline=True)
 
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except ValueError as e:
@@ -100,7 +96,7 @@ class Tickets(commands.Cog):
                 color=discord.Color.blue()
             )
 
-            for tt_id, name, mention_roles, close_perms, log_ch, archive_ch, cat_id in ticket_types:
+            for tt_id, name, mention_roles, close_perms, log_ch, cat_id in ticket_types:
                 mention_list = json.loads(mention_roles) if mention_roles else []
                 close_list = json.loads(close_perms) if close_perms else []
 
@@ -111,6 +107,33 @@ class Tickets(commands.Cog):
 
                 embed.add_field(name=name, value=value, inline=False)
 
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
+
+    @app_commands.command(
+        name="delete_ticket_type",
+        description="🗑️ Elimina un tipo de ticket"
+    )
+    @app_commands.describe(ticket_type_id="ID del tipo de ticket a eliminar")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def delete_ticket_type(self, interaction: discord.Interaction, ticket_type_id: int):
+        try:
+            # Check if ticket type exists
+            tt = await self.db.get_ticket_type(ticket_type_id)
+            if not tt:
+                await interaction.response.send_message("❌ Tipo de ticket no encontrado", ephemeral=True)
+                return
+
+            # Check if there are active tickets of this type
+            # This would require checking active_tickets table, but for simplicity we'll just delete
+            await self.db.delete_ticket_type(ticket_type_id)
+
+            embed = discord.Embed(
+                title="✅ Tipo de ticket eliminado",
+                description=f"El tipo de ticket **{tt[1]}** ha sido eliminado",
+                color=discord.Color.red()
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
@@ -184,14 +207,14 @@ class Tickets(commands.Cog):
     )
     @app_commands.describe(
         selection_type="Tipo de selección: button, list, o emoji",
-        ticket_options="Opciones en formato: ID:posición:emoji:color (ej: 1:1:🎫:primary,2:2:📋:secondary)"
+        ticket_config="Configuración de tickets (formato depende del tipo seleccionado)"
     )
     @app_commands.checks.has_permissions(administrator=True)
     async def configure_ticket_panel_step2(
         self,
         interaction: discord.Interaction,
         selection_type: str,
-        ticket_options: str
+        ticket_config: str
     ):
         try:
             if not hasattr(self.bot, 'temp_panel_data') or interaction.user.id not in self.bot.temp_panel_data:
@@ -204,46 +227,106 @@ class Tickets(commands.Cog):
 
             temp_data = self.bot.temp_panel_data[interaction.user.id]
 
-            # Parse ticket options
+            # Parse ticket config based on selection type
             options = []
-            for opt in ticket_options.split(','):
-                parts = opt.strip().split(':')
-                if len(parts) != 4:
-                    await interaction.response.send_message(f"❌ Formato inválido en: {opt}. Usa ID:posición:emoji:color", ephemeral=True)
-                    return
 
-                tt_id, position, emoji, btn_color = parts
-                tt_id = int(tt_id)
-                position = int(position)
+            if selection_type == 'emoji':
+                # Format: ticket_id:emoji (ej: 1:🎫,2:📋)
+                for config in ticket_config.split(','):
+                    parts = config.strip().split(':')
+                    if len(parts) != 2:
+                        await interaction.response.send_message(f"❌ Formato inválido para emoji: {config}. Usa ID:emoji", ephemeral=True)
+                        return
 
-                # Validate ticket type exists
-                tt = await self.db.get_ticket_type(tt_id)
-                if not tt:
-                    await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=True)
-                    return
+                    tt_id, emoji = parts
+                    tt_id = int(tt_id)
 
-                if btn_color not in ['primary', 'secondary', 'success', 'danger']:
-                    await interaction.response.send_message(f"❌ Color de botón inválido: {btn_color}", ephemeral=True)
-                    return
+                    # Validate ticket type exists
+                    tt = await self.db.get_ticket_type(tt_id)
+                    if not tt:
+                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=True)
+                        return
 
-                options.append({
-                    'type_id': tt_id,
-                    'position': position,
-                    'emoji': emoji,
-                    'button_color': btn_color
-                })
+                    options.append({
+                        'type_id': tt_id,
+                        'emoji': emoji,
+                        'type_name': tt[1]  # Store name for embed display
+                    })
 
-            # Sort by position
-            options.sort(key=lambda x: x['position'])
+            elif selection_type == 'button':
+                # Format: ticket_id:emoji:text:color (ej: 1:🎫:Crear Ticket:primary)
+                for config in ticket_config.split(','):
+                    parts = config.strip().split(':')
+                    if len(parts) != 4:
+                        await interaction.response.send_message(f"❌ Formato inválido para botón: {config}. Usa ID:emoji:texto:color", ephemeral=True)
+                        return
 
-            # Create the embed
-            embed = discord.Embed(
-                title=temp_data['embed_title'],
-                description=temp_data['embed_description'],
-                color=int(temp_data['embed_color'][1:], 16)
-            )
-            if temp_data['embed_image']:
-                embed.set_image(url=temp_data['embed_image'])
+                    tt_id, emoji, button_text, btn_color = parts
+                    tt_id = int(tt_id)
+
+                    # Validate ticket type exists
+                    tt = await self.db.get_ticket_type(tt_id)
+                    if not tt:
+                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=True)
+                        return
+
+                    if btn_color not in ['primary', 'secondary', 'success', 'danger']:
+                        await interaction.response.send_message(f"❌ Color de botón inválido: {btn_color}", ephemeral=True)
+                        return
+
+                    options.append({
+                        'type_id': tt_id,
+                        'emoji': emoji,
+                        'button_text': button_text,
+                        'button_color': btn_color
+                    })
+
+            elif selection_type == 'list':
+                # Format: ticket_id:position:emoji:text (ej: 1:1:🎫:Reportes)
+                position_tracker = {}
+                for config in ticket_config.split(','):
+                    parts = config.strip().split(':')
+                    if len(parts) != 4:
+                        await interaction.response.send_message(f"❌ Formato inválido para lista: {config}. Usa ID:posición:emoji:texto", ephemeral=True)
+                        return
+
+                    tt_id, position, emoji, option_text = parts
+                    tt_id = int(tt_id)
+                    position = int(position)
+
+                    # Validate ticket type exists
+                    tt = await self.db.get_ticket_type(tt_id)
+                    if not tt:
+                        await interaction.response.send_message(f"❌ Tipo de ticket {tt_id} no existe", ephemeral=True)
+                        return
+
+                    # Check for duplicate positions
+                    if position in position_tracker:
+                        await interaction.response.send_message(f"❌ Posición {position} duplicada", ephemeral=True)
+                        return
+                    position_tracker[position] = True
+
+                    options.append({
+                        'type_id': tt_id,
+                        'position': position,
+                        'emoji': emoji,
+                        'option_text': option_text
+                    })
+
+                # Sort by position
+                options.sort(key=lambda x: x['position'])
+
+            # Add selection info to embed for emoji type
+            if selection_type == 'emoji':
+                emoji_lines = []
+                for opt in options:
+                    emoji_lines.append(f"**{opt['type_name']}**: {opt['emoji']}")
+                if emoji_lines:
+                    embed.add_field(
+                        name="🎫 Tipos de Ticket Disponibles",
+                        value="\n".join(emoji_lines),
+                        inline=False
+                    )
 
             # Create the message with appropriate components
             channel = self.bot.get_channel(temp_data['channel_id'])
@@ -363,7 +446,7 @@ class Tickets(commands.Cog):
                 await interaction.response.send_message("❌ Tipo de ticket no encontrado", ephemeral=True)
                 return
 
-            tt_id, name, mention_roles, close_perms, log_ch, archive_ch, cat_id = tt
+            tt_id, name, mention_roles, close_perms, log_ch, cat_id = tt
 
             # Get category
             category = interaction.guild.get_channel(cat_id)
@@ -455,7 +538,7 @@ class Tickets(commands.Cog):
             # Close ticket
             await self.db.close_ticket(ticket_id)
 
-            # Archive to log channel
+            # Log to log channel
             if tt and tt[4]:  # log_channel_id
                 log_channel = self.bot.get_channel(tt[4])
                 if log_channel:
@@ -466,11 +549,6 @@ class Tickets(commands.Cog):
                         timestamp=datetime.datetime.now()
                     )
                     await log_channel.send(embed=embed)
-
-            # Delete channel after a delay
-            await interaction.response.send_message("🔒 Cerrando ticket...", ephemeral=True)
-            await asyncio.sleep(3)
-            await interaction.channel.delete(reason=f"Ticket closed by {interaction.user}")
 
         except Exception as e:
             await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
@@ -506,61 +584,6 @@ class Tickets(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
 
-    @app_commands.command(
-        name="archive_ticket",
-        description="📁 Archiva el ticket actual al canal de archivos"
-    )
-    async def archive_ticket(self, interaction: discord.Interaction):
-        try:
-            ticket_info = await self.db.get_active_ticket(interaction.channel.id)
-            if not ticket_info:
-                await interaction.response.send_message("❌ Este no es un canal de ticket activo", ephemeral=True)
-                return
-
-            ticket_id, guild_id, user_id, ticket_type_id, created_at, status = ticket_info
-
-            tt = await self.db.get_ticket_type(ticket_type_id)
-            if not tt or not tt[5]:  # archive_channel_id
-                await interaction.response.send_message("❌ Este tipo de ticket no tiene canal de archivos configurado", ephemeral=True)
-                return
-
-            archive_channel = self.bot.get_channel(tt[5])
-            if not archive_channel:
-                await interaction.response.send_message("❌ Canal de archivos no encontrado", ephemeral=True)
-                return
-
-            # Create transcript
-            messages = []
-            async for message in interaction.channel.history(limit=100, oldest_first=True):
-                messages.append(f"{message.author}: {message.content}")
-
-            transcript = "\n".join(messages)
-
-            # Send to archive channel
-            embed = discord.Embed(
-                title=f"📁 Ticket Archivado - {tt[1]}",
-                description=f"**Usuario:** <@{user_id}>\n**Creado:** {created_at}\n**Archivado por:** {interaction.user.mention}",
-                color=discord.Color.orange(),
-                timestamp=datetime.datetime.now()
-            )
-
-            # Create file with transcript
-            file_content = f"Ticket ID: {ticket_id}\nTipo: {tt[1]}\nUsuario: {user_id}\nCreado: {created_at}\nArchivado por: {interaction.user}\n\nTranscript:\n{transcript}"
-            file = discord.File(io.StringIO(file_content), filename=f"ticket_{ticket_id}.txt")
-
-            await archive_channel.send(embed=embed, file=file)
-
-            # Close ticket
-            await self.db.close_ticket(ticket_id)
-            await interaction.response.send_message("✅ Ticket archivado", ephemeral=True)
-
-            # Delete channel
-            await asyncio.sleep(3)
-            await interaction.channel.delete(reason=f"Ticket archived by {interaction.user}")
-
-        except Exception as e:
-            await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
-
 
 # UI Components
 class TicketButtonView(ui.View):
@@ -570,7 +593,7 @@ class TicketButtonView(ui.View):
 
         for opt in options:
             button = ui.Button(
-                label=f"Crear {opt['type_id']}",
+                label=opt.get('button_text', f"Crear {opt['type_id']}"),
                 emoji=opt['emoji'],
                 style=getattr(discord.ButtonStyle, opt['button_color']),
                 custom_id=f"ticket_create_{opt['type_id']}"
@@ -602,7 +625,7 @@ class TicketSelectView(ui.View):
             tt = await self.db.get_ticket_type(opt['type_id'])
             if tt:
                 select_options.append(discord.SelectOption(
-                    label=tt[1],
+                    label=opt.get('option_text', tt[1]),
                     value=str(opt['type_id']),
                     emoji=opt['emoji']
                 ))

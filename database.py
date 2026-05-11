@@ -59,7 +59,6 @@ class Database:
                     mention_roles TEXT,  -- JSON array of role IDs
                     close_permissions TEXT,  -- JSON array of role IDs
                     log_channel_id INTEGER,
-                    archive_channel_id INTEGER,
                     category_id INTEGER  -- Discord category ID
                 );
 
@@ -73,7 +72,7 @@ class Database:
                     embed_color TEXT,
                     embed_image TEXT,
                     selection_type TEXT,  -- 'button', 'list', 'emoji'
-                    ticket_options TEXT  -- JSON array of {type_id, position, emoji, button_color}
+                    ticket_options TEXT  -- JSON array of options with different fields based on selection_type
                 );
 
                 CREATE TABLE IF NOT EXISTS active_tickets (
@@ -253,13 +252,13 @@ class Database:
             return await cursor.fetchall()
 
     # Ticket Types
-    async def create_ticket_type(self, guild_id: int, name: str, mention_roles: str, close_permissions: str, log_channel_id: int, archive_channel_id: int, category_id: int) -> int:
+    async def create_ticket_type(self, guild_id: int, name: str, mention_roles: str, close_permissions: str, log_channel_id: int, category_id: int) -> int:
         """Create a new ticket type and return its ID"""
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute(
-                """INSERT INTO ticket_types (guild_id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id)
-                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                (guild_id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id)
+                """INSERT INTO ticket_types (guild_id, name, mention_roles, close_permissions, log_channel_id, category_id)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (guild_id, name, mention_roles, close_permissions, log_channel_id, category_id)
             )
             await db.commit()
             return cursor.lastrowid
@@ -268,7 +267,7 @@ class Database:
         """Get all ticket types for a guild"""
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute(
-                "SELECT id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id FROM ticket_types WHERE guild_id = ?",
+                "SELECT id, name, mention_roles, close_permissions, log_channel_id, category_id FROM ticket_types WHERE guild_id = ?",
                 (guild_id,)
             )
             return await cursor.fetchall()
@@ -277,7 +276,7 @@ class Database:
         """Get a specific ticket type"""
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute(
-                "SELECT id, name, mention_roles, close_permissions, log_channel_id, archive_channel_id, category_id FROM ticket_types WHERE id = ?",
+                "SELECT id, name, mention_roles, close_permissions, log_channel_id, category_id FROM ticket_types WHERE id = ?",
                 (ticket_type_id,)
             )
             return await cursor.fetchone()
