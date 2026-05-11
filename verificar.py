@@ -19,10 +19,10 @@ def main():
         "main.py existe": os.path.exists('main.py'),
         "database.py existe": os.path.exists('database.py'),
         "Carpeta cogs/ existe": os.path.isdir('cogs'),
-        "cogs/moderation.py existe": os.path.exists('cogs/moderation.py'),
         "cogs/welcome.py existe": os.path.exists('cogs/welcome.py'),
         "cogs/roles.py existe": os.path.exists('cogs/roles.py'),
         "cogs/triggers.py existe": os.path.exists('cogs/triggers.py'),
+        "cogs/social.py existe": os.path.exists('cogs/social.py'),
     }
     
     print("📋 VERIFICACIONES:\n")

@@ -107,6 +107,7 @@ class Roles(commands.Cog):
                 await interaction.response.send_message("❌ El emoji es demasiado largo", ephemeral=True)
                 return
             
+            # Save the reaction role configuration
             await self.db.add_reaction_role(
                 interaction.guild.id,
                 msg_id,
@@ -114,6 +115,14 @@ class Roles(commands.Cog):
                 emoji,
                 role.id
             )
+
+            # Add the emoji to the message so users can react
+            try:
+                message = await interaction.channel.fetch_message(msg_id)
+                await message.add_reaction(emoji)
+            except Exception:
+                # No need to fail the whole command if reaction cannot be added
+                pass
             
             embed = discord.Embed(
                 title="✅ Reaction Role Agregado",

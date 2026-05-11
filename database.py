@@ -39,6 +39,11 @@ class Database:
                     PRIMARY KEY (message_id, emoji)
                 );
 
+                CREATE TABLE IF NOT EXISTS suggestion_channels (
+                    guild_id INTEGER PRIMARY KEY,
+                    channel_id INTEGER
+                );
+
                 CREATE TABLE IF NOT EXISTS triggers (
                     guild_id INTEGER,
                     trigger_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -145,6 +150,35 @@ class Database:
                 (message_id, emoji)
             )
             await db.commit()
+
+    # Suggestions
+    async def set_suggestions_channel(self, guild_id: int, channel_id: int):
+        """Set the suggestions channel for a guild"""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "INSERT OR REPLACE INTO suggestion_channels (guild_id, channel_id) VALUES (?, ?)",
+                (guild_id, channel_id)
+            )
+            await db.commit()
+
+    async def remove_suggestions_channel(self, guild_id: int):
+        """Remove the suggestions channel for a guild"""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "DELETE FROM suggestion_channels WHERE guild_id = ?",
+                (guild_id,)
+            )
+            await db.commit()
+
+    async def get_suggestions_channel(self, guild_id: int) -> Optional[int]:
+        """Get the suggestions channel id for a guild"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT channel_id FROM suggestion_channels WHERE guild_id = ?",
+                (guild_id,)
+            )
+            row = await cursor.fetchone()
+            return row[0] if row else None
 
     # Triggers
     async def add_trigger(self, guild_id: int, keyword: str, response: str):
