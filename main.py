@@ -30,8 +30,8 @@ intents.reactions = True
 intents.guilds = True
 
 # Para comandos de barra (slash commands), necesitas un command_prefix aunque no lo uses
-# Ponemos uno por defecto pero no lo usaremos para comandos
-bot = commands.Bot(command_prefix="!", intents=intents)
+# Usamos ° como prefix para evitar conflictos
+bot = commands.Bot(command_prefix="°", intents=intents)
 db = Database(DATABASE_PATH)
 
 

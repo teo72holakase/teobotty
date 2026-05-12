@@ -1,63 +1,80 @@
-# 🤖 TeoBotty - Discord Bot Completo
+# 🤖 TeoBotty - Discord Bot Modular
 
-> Un bot de Discord modular y avanzado con **sistema de tickets profesional completo**, roles, sugerencias, votaciones y mucho más.
+> Un bot de Discord profesional y modular con **sistema de tickets avanzado**, gestión de roles, autoroles, sugerencias, votaciones, diversión y más.
 
 ## 📋 Tabla de Contenidos
 
+- [✨ Características](#-características)
 - [🚀 Instalación](#-instalación)
 - [⚙️ Configuración](#️-configuración)
 - [📚 Comandos](#-comandos)
   - [🎫 Sistema de Tickets](#-sistema-de-tickets)
-  - [ Roles y Autoroles](#-roles-y-autoroles)
+  - [🔐 Roles y Autoroles](#-roles-y-autoroles)
   - [💬 Bienvenida y Despedida](#-bienvenida-y-despedida)
   - [🎯 Triggers](#-triggers)
   - [🎉 Diversión](#-diversión)
   - [💡 Sugerencias](#-sugerencias)
   - [🗳️ Votaciones](#️-votaciones)
   - [ℹ️ Información](#️-información)
+- [⏰ Keep-Alive (Anti-Sueño)](#️-keep-alive-anti-sueño)
 - [🔧 Solución de Problemas](#-solución-de-problemas)
 - [📁 Estructura del Proyecto](#-estructura-del-proyecto)
-- [🤝 Contribución](#-contribución)
+
+---
+
+## ✨ Características
+
+| Característica | Descripción |
+|---|---|
+| **🎫 Sistema de Tickets** | Panel configurable con reacciones, botones o listas. Múltiples tipos de tickets con permisos personalizados |
+| **🔐 Gestión de Roles** | Autoroles automáticos, reaction roles, gestión avanzada |
+| **💬 Bienvenida/Despedida** | Mensajes personalizables con variables dinámicas |
+| **🎯 Triggers** | Respuestas automáticas basadas en palabras clave |
+| **🎉 Diversión** | Dados, monedas, juegos interactivos, citas |
+| **💡 Sugerencias** | Sistema completo con embeds automáticos |
+| **🗳️ Votaciones** | Crear encuestas con múltiples opciones |
+| **ℹ️ Info** | Información de usuarios y servidor |
+| **⏰ Keep-Alive** | Tarea periódica para mantener el servidor activo |
+| **🗄️ Base de Datos** | SQLite para almacenamiento persistente |
 
 ---
 
 ## 🚀 Instalación
 
-### Requisitos Previos
-- Python 3.8 o superior
+### Requisitos
+- Python 3.8+
 - Token de bot de Discord
 
-### Pasos de Instalación
+### Pasos
 
-1. **Clona o descarga el proyecto**
+1. **Clonar/Descargar el proyecto**
    ```bash
    cd c:\Users\teo72\Downloads\teobot
    ```
 
-2. **Instala las dependencias**
+2. **Instalar dependencias**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Configura el token de Discord**
-   - Crea un archivo `.env` en la raíz del proyecto
-   - Agrega tu token:
-   ```
-   DISCORD_TOKEN=tu_token_aqui
-   DATABASE_PATH=./bot_data.db
+3. **Crear archivo `.env`**
+   ```bash
+   # Copiar desde .env.example o crear manual
+   echo DISCORD_TOKEN=tu_token_aqui > .env
+   echo DATABASE_PATH=./bot_data.db >> .env
    ```
 
-4. **Ejecuta el bot**
+4. **Ejecutar el bot**
    ```bash
    python main.py
    ```
 
 ### Obtener Token de Discord
 1. Ve a [Discord Developer Portal](https://discord.com/developers/applications)
-2. Crea una nueva aplicación
-3. Ve a la pestaña "Bot" y crea un bot
+2. Crea nueva aplicación
+3. Ve a "Bot" y crea un bot
 4. Copia el token
-5. Invita el bot a tu servidor con permisos de administrador
+5. Invita el bot al servidor con permisos de administrador
 
 ---
 
@@ -67,17 +84,13 @@
 ```env
 DISCORD_TOKEN=tu_token_real_aqui
 DATABASE_PATH=./bot_data.db
+KEEP_ALIVE_GUILD_ID=123456789
+KEEP_ALIVE_CHANNEL_ID=987654321
 ```
 
-### Permisos Recomendados del Bot
-- Administrador (para funcionalidades completas)
-- O permisos específicos:
-  - Gestionar roles
-  - Gestionar canales
-  - Gestionar mensajes
-  - Banear miembros
-  - Expulsar miembros
-  - Moderar miembros
+### Permisos Recomendados
+- Administrador (más fácil)
+- O permisos específicos: Gestionar roles, canales, mensajes, reaccionar
 
 ---
 
@@ -87,204 +100,240 @@ DATABASE_PATH=./bot_data.db
 
 Sistema completo de tickets similar a TicketKing/Tickets.gg
 
-#### Configuración de Tipos de Tickets
-- `/create_ticket_type <name> <mention_roles> <close_permissions> <log_channel> <archive_channel> <category>`
-  - Crea un nuevo tipo de ticket
-  - `mention_roles`: IDs de roles separados por comas
-  - `close_permissions`: IDs de roles que pueden cerrar tickets
+#### Crear Tipo de Ticket
+```
+/create_ticket_type
+  nombre: "Soporte"
+  mention_roles: "123456789,987654321"
+  close_permissions: "123456789"
+  log_channel: #ticket-logs
+  category: Tickets
+```
 
-- `/list_ticket_types`
-  - Muestra todos los tipos de ticket configurados
+**Parámetros:**
+- `nombre`: Nombre del tipo
+- `mention_roles`: Roles a mencionar (IDs separadas por comas)
+- `close_permissions`: Roles que pueden cerrar
+- `log_channel`: Canal de logs
+- `category`: Categoría de Discord
 
-#### Creación de Paneles de Tickets (2 pasos)
-**Paso 1:** `/create_ticket_panel <channel> <title> <description> <color> [image]`
-- Configura el embed del panel
-- `color`: Color en formato hex (#FF0000)
+#### Listar Tipos
+```
+/list_ticket_types      # Ver todos los tipos configurados
+```
 
-**Paso 2:** `/configure_ticket_panel <selection_type> <ticket_config>`
-- Configura cómo seleccionar tickets
-- `selection_type`: **Lista desplegable** con 3 opciones:
-  - 🎫 Reacciones (Emoji)
-  - 🔘 Botones Interactivos
-  - 📋 Lista Desplegable
-- `ticket_config`: Formato depende del tipo seleccionado:
-  - **🎫 Emoji**: `ID:emoji` (ej: `1:🎫,2:📋`)
-  - **🔘 Botón**: `ID:emoji:texto:color` (ej: `1:🎫:Crear Ticket:primary`)
-  - **📋 Lista**: `ID:posición:emoji:texto` (ej: `1:1:🎫:Reportes`)
+#### Crear Panel - Paso 1
+```
+/create_ticket_panel
+  channel: #tickets
+  title: 📞 Centro de Soporte
+  description: Haz click para crear un ticket
+  color: #3498DB
+  image: https://... (opcional)
+```
 
-> **💡 Nota:** Los paneles de tickets se muestran públicamente en el canal seleccionado para que todos los usuarios puedan verlos e interactuar con ellos.
+#### Crear Panel - Paso 2
+```
+/configure_ticket_panel
+  selection_type: "Reacciones (Emoji)"
+  ticket_config: "1:🎫,2:📋,3:⚠️"
+```
 
-#### Gestión de Tickets
-- `/close_ticket`
-  - Cierra el ticket actual (verifica permisos)
+**Tipos de selección:**
+- **🎫 Emoji**: Formato `ID:emoji` (ej: `1:🎫,2:📋`)
+- **🔘 Botones**: Formato `ID:emoji:texto:color` (ej: `1:🎫:Ticket:primary`)
+- **📋 Lista**: Formato `ID:posición:emoji:texto` (ej: `1:1:🎫:Soporte`)
 
-- `/add_to_ticket <user>`
-  - Añade un usuario al ticket actual
+#### Gestionar Tickets
+```
+/close_ticket           # Cierra el ticket actual
+/add_to_ticket @user    # Añade usuario al ticket
+```
 
-###  Roles y Autoroles
+---
+
+### 🔐 Roles y Autoroles
 
 #### Autoroles
-- `/add_autorole <role>`
-  - Añade un rol que se asigna automáticamente a nuevos miembros
-
-- `/remove_autorole <role>`
-  - Elimina un autorol
-
-- `/list_autoroles`
-  - Muestra todos los autoroles configurados
+```
+/add_autorole @Rol              # Añade autorol
+/remove_autorole @Rol           # Elimina autorol
+/list_autoroles                 # Ver todos
+```
 
 #### Reaction Roles
-- `/add_reaction_role <message_id> <emoji> <role>`
-  - Crea un rol que se asigna al reaccionar a un mensaje
-  - El bot añade automáticamente el emoji al mensaje
+```
+/add_reaction_role
+  message_id: 123456789
+  emoji: 🎮
+  role: @Gamers
 
-- `/remove_reaction_role <message_id> <emoji>`
-  - Elimina un reaction role
+/remove_reaction_role 123456789 🎮
+```
+
+---
 
 ### 💬 Bienvenida y Despedida
 
-- `/set_welcome <channel> <message>`
-  - Configura mensaje de bienvenida
-  - Variables disponibles: `{user}`, `{username}`, `{guild}`
+```
+/set_welcome
+  channel: #bienvenida
+  message: ¡Bienvenido {user} a {guild}!
 
-- `/set_farewell <channel> <message>`
-  - Configura mensaje de despedida
-  - Variables disponibles: `{user}`, `{username}`, `{guild}`
+/set_farewell
+  channel: #despedidas
+  message: {username} se fue del servidor
 
-- `/test_welcome`
-  - Prueba el mensaje de bienvenida
+/test_welcome           # Prueba el mensaje
+```
+
+**Variables:** `{user}`, `{username}`, `{guild}`
+
+---
 
 ### 🎯 Triggers
 
-Sistema de respuestas automáticas por palabras clave
+```
+/add_trigger
+  keyword: "hola"
+  response: "¡Hola {user}! 👋"
 
-- `/add_trigger <keyword> <response>`
-  - Añade una respuesta automática
-  - Variables disponibles: `{user}`, `{username}`, `{message}`
+/remove_trigger hola
+/list_triggers
+```
 
-- `/remove_trigger <keyword>`
-  - Elimina un trigger
+**Variables:** `{user}`, `{username}`, `{message}`
 
-- `/list_triggers`
-  - Muestra todos los triggers configurados
+---
 
 ### 🎉 Diversión
 
-- `/dice`
-  - Lanza un dado (1-6)
+```
+/dice                    # Dado 1-6
+/coin                    # Cara o Cruz
+/rps piedra              # Piedra, papel, tijeras
+/8ball ¿Lluverá?         # Bola mágica
+/quote                   # Cita inspiradora
+/roulette                # Ruleta rusa
+/hug @usuario            # Abrazo
+/rate algo               # Califica 1-10
+/choose opción1;opción2  # Elige aleatoriamente
+```
 
-- `/coin`
-  - Lanza una moneda (Cara/Cruz)
-
-- `/rps <choice>`
-  - Piedra, papel o tijeras contra el bot
-
-- `/8ball <question>`
-  - Pregunta a la bola mágica del destino
-
-- `/quote`
-  - Cita motivacional aleatoria
-
-- `/roulette`
-  - Ruleta rusa (50% de probabilidad)
-
-- `/hug <user>`
-  - Abraza a un usuario
-
-- `/rate <target>`
-  - Califica algo o alguien (1-10)
-
-- `/choose <options>`
-  - Elige aleatoriamente entre opciones
+---
 
 ### 💡 Sugerencias
 
-Sistema de sugerencias con embeds automáticos
+```
+/set_suggestions #sugerencias       # Activar sistema
+/unset_suggestions                  # Desactivar
 
-- `/set_suggestions <channel>`
-  - Configura el canal de sugerencias
+# Ahora, mensajes en ese canal se convierten en sugerencias
+# Con reacciones automáticas: ⬆️ ⬇️
+```
 
-- `/unset_suggestions`
-  - Elimina el canal de sugerencias
-
-**Funcionamiento automático:**
-- Los mensajes en el canal configurado se convierten automáticamente en embeds
-- Se añade el autor, foto de perfil y contenido
-- Reacciones automáticas: ⬆️ (aprobar) y ⬇️ (rechazar)
-- Soporte para imágenes adjuntas
+---
 
 ### 🗳️ Votaciones
 
-- `/create_poll <question> <options> [everyone] [image1] [image2] [image3]`
-  - Crea una votación con múltiples opciones
-  - `options`: Separadas por `;` (ej: `Sí;No;Tal vez`)
-  - `everyone`: `true` para mencionar @everyone
-  - Soporte hasta 3 imágenes
+```
+/create_poll
+  question: "¿Cuál color?"
+  options: "Rojo;Azul;Verde"
+  everyone: false
+  image1: https://... (opcional)
+```
+
+---
 
 ### ℹ️ Información
 
-- `/userinfo [user]`
-  - Información detallada de un usuario
-  - Roles, fecha de unión, cuenta creada, etc.
+```
+/userinfo               # Tu información
+/userinfo @user         # Info de otro usuario
+/serverinfo             # Información del servidor
+```
 
-- `/serverinfo`
-  - Información del servidor
-  - Miembros, canales, roles, nivel de boost, etc.
+---
+
+## ⏰ Keep-Alive (Anti-Sueño)
+
+**¿Qué es?**
+- Tarea automática que se ejecuta cada 20 minutos
+- Reacciona a un mensaje en un canal designado
+- Mantiene el servidor host activo
+
+**¿Por qué?**
+- Hosting gratuito (Railway, Render) suspende bots inactivos
+- Esta función lo evita
+
+**¿Cómo configurar?**
+
+1. **Ejecuta el comando en Discord:**
+   ```
+   /set_keep_alive #canal-importante
+   ```
+   El bot te mostrará los IDs necesarios
+
+2. **Edita `.env` con los IDs:**
+   ```env
+   KEEP_ALIVE_GUILD_ID=123456789
+   KEEP_ALIVE_CHANNEL_ID=987654321
+   ```
+
+3. **Reinicia el bot:**
+   ```bash
+   python main.py
+   ```
+
+**¿Qué hace?**
+- Cada 20 minutos reacciona con ❤️ al último mensaje
+- Mantiene el servidor "despierto"
+
+**¿Sin configurar?**
+- Solo hace logs, el bot sigue funcionando igual
+
+---
+
+## 📝 Prefijo de Comandos
+
+- **Slash commands (/)**: Todos los comandos principales (recomendado)
+- **Prefix (°)**: Para comandos legacy si es necesario
 
 ---
 
 ## 🔧 Solución de Problemas
 
-### Problemas Comunes
-
-#### ❌ "ModuleNotFoundError: No module named 'discord'"
-**Solución:**
+### ❌ "ModuleNotFoundError: No module named 'discord'"
 ```bash
 pip install -r requirements.txt
 ```
 
-#### ❌ "No module named 'audioop'" (Python 3.14+)
-**Solución:** Las dependencias ya están actualizadas en `requirements.txt` para ser compatibles.
-
-#### ❌ "DISCORD_TOKEN not found in .env file"
-**Solución:**
-1. Asegúrate de que el archivo `.env` existe
-2. Verifica que contiene: `DISCORD_TOKEN=tu_token_real`
+### ❌ "DISCORD_TOKEN not found"
+1. Verifica que `.env` existe
+2. Contiene: `DISCORD_TOKEN=tu_token_real`
 3. Reinicia el bot
 
-#### ❌ Los comandos no aparecen en Discord
-**Solución:**
-- Espera hasta 1 hora para que Discord sincronice los comandos
-- Reinicia el bot
-- Verifica que el bot tiene permisos de aplicación.commands
+### ❌ Los comandos no aparecen
+- Espera 1-5 minutos
+- Reinicia Discord
+- Verifica permisos del bot
 
-#### ❌ Error de permisos en comandos
-**Solución:**
-- Asegúrate de que el bot tiene los permisos necesarios
-- Para comandos administrativos, el usuario debe tener permisos de administrador
+### ❌ El bot no responde
+1. Token correcto en `.env`
+2. Bot online en Discord
+3. Verifica los logs: `python main.py`
 
-#### ❌ El bot no responde
-**Solución:**
-1. Verifica que el token es correcto
-2. Comprueba que el bot está online en Discord
-3. Revisa los logs de la consola para errores
+### ❌ Error "No module named 'audioop'" (Python 3.14+)
+- Las dependencias en `requirements.txt` están actualizadas
+- Reinstala: `pip install -r requirements.txt --force-reinstall`
 
-#### ❌ Problemas con la base de datos
-**Solución:**
-- Elimina `bot_data.db` y reinicia el bot (se recreará automáticamente)
-- Asegúrate de que la carpeta tiene permisos de escritura
-
-### Comandos de Debug
-
-Ejecuta `python verificar.py` para verificar que todo está configurado correctamente.
-
-### Logs y Debugging
-
-El bot muestra logs detallados en la consola:
-- ✅ Cogs cargados exitosamente
-- ✅ Base de datos inicializada
-- ✅ Comandos sincronizados
-- ❌ Errores específicos
+### ❌ Problemas con base de datos
+```bash
+# Eliminar BD (se recrea automáticamente)
+rm bot_data.db
+python main.py
+```
 
 ---
 
@@ -292,12 +341,48 @@ El bot muestra logs detallados en la consola:
 
 ```
 teobot/
-├── main.py              # Archivo principal del bot
-├── database.py          # Gestión de base de datos SQLite
-├── verificar.py         # Script de verificación
-├── requirements.txt     # Dependencias Python
-├── Procfile            # Para deployment en hosting
-├── .env                # Variables de entorno (crear)
+├── main.py                  # Archivo principal
+├── database.py              # Base de datos SQLite
+├── verificar.py             # Script de verificación
+├── requirements.txt         # Dependencias Python
+├── Procfile                 # Para deploy
+├── README.md                # Este archivo
+├── .env                     # Variables (crear)
+├── .env.example             # Template
+└── cogs/                    # Módulos del bot
+    ├── __init__.py
+    ├── tickets.py           # Sistema de tickets
+    ├── roles.py             # Gestión de roles
+    ├── welcome.py           # Bienvenida/Despedida
+    ├── triggers.py          # Respuestas automáticas
+    ├── fun.py               # Diversión
+    ├── social.py            # Sugerencias/Votaciones
+    ├── info.py              # Información
+    └── keep_alive.py        # Keep-Alive
+```
+
+---
+
+## 📊 Información Técnica
+
+- **Lenguaje**: Python 3.8+
+- **Framework**: discord.py 2.7+
+- **Base de Datos**: SQLite3
+- **Módulos**: 8 cogs funcionales
+- **Comandos**: 40+ slash commands
+- **Tablas BD**: 8
+
+---
+
+## 🤝 Soporte
+
+- Verifica los logs en consola
+- Lee el código (está comentado)
+- Usa `python verificar.py` para debug
+
+---
+
+**¡Tu servidor de Discord nunca fue tan profesional! 🚀**
 ├── .env.example        # Plantilla de variables
 ├── .gitignore          # Archivos ignorados por Git
 ├── README.md           # Esta documentación
