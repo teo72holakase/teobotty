@@ -33,6 +33,7 @@
 | **🎉 Diversión** | Dados, monedas, juegos interactivos, citas |
 | **💡 Sugerencias** | Sistema completo con embeds automáticos |
 | **🗳️ Votaciones** | Crear encuestas con múltiples opciones |
+| **🎨 Creador de Embeds** | Constructor interactivo de embeds personalizados |
 | **ℹ️ Info** | Información de usuarios y servidor |
 | **⏰ Keep-Alive** | Tarea periódica para mantener el servidor activo |
 | **🗄️ Base de Datos** | SQLite para almacenamiento persistente |
@@ -96,7 +97,27 @@ KEEP_ALIVE_CHANNEL_ID=987654321
 
 ## 📚 Comandos
 
-### 🎫 Sistema de Tickets
+### � Creador de Embeds
+
+```
+/create_embed           # Abre el creador de embeds interactivo
+```
+
+**Funcionamiento:**
+1. Abre un modal para ingresa el título, descripción y color
+2. Muestra botones para editar cada parte del embed
+3. Permite previsualizar el embed
+4. Opción para enviar a cualquier canal
+
+**Características:**
+- Editar título, descripción y color
+- Vista previa instantánea
+- Seleccionar canal para enviar
+- Interfaz intuitiva con botones
+
+---
+
+### �🎫 Sistema de Tickets
 
 Sistema completo de tickets similar a TicketKing/Tickets.gg
 
