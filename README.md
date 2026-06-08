@@ -1,4 +1,4 @@
-![TeoBotty](./github-header-banner.png)
+![TeoBotty](./teo-banner.png)
 
 # 🤖 TeoBotty
 
