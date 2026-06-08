@@ -29,9 +29,7 @@ intents.members = True
 intents.reactions = True
 intents.guilds = True
 
-# Para comandos de barra (slash commands), necesitas un command_prefix aunque no lo uses
-# Usamos ° como prefix para evitar conflictos
-bot = commands.Bot(command_prefix="°", intents=intents)
+bot = commands.Bot(command_prefix=None, intents=intents)
 db = Database(DATABASE_PATH)
 
 
@@ -40,14 +38,22 @@ async def on_ready():
     """Called when bot is ready"""
     logger.info(f"✅ Bot logged in as {bot.user}")
 
-    # Sync commands globally - esto hace que aparezcan con / y tengan autocompletado
+    # Sync commands per guild for immediate availability
+    total_synced = 0
+    for guild in bot.guilds:
+        try:
+            synced = await bot.tree.sync(guild=discord.Object(id=guild.id))
+            total_synced += len(synced)
+            logger.info(f"✅ Synced {len(synced)} commands for guild {guild.name} ({guild.id})")
+        except Exception as e:
+            logger.error(f"❌ Error syncing guild {guild.id}: {e}")
+
+    # Also attempt a global sync (will be eventual)
     try:
-        synced = await bot.tree.sync()
-        logger.info(f"✅ Synced {len(synced)} global slash commands")
-        for cmd in synced:
-            logger.info(f"   • /{cmd.name}")
+        global_synced = await bot.tree.sync()
+        logger.info(f"✅ Globally synced {len(global_synced)} commands")
     except Exception as e:
-        logger.error(f"❌ Error syncing commands: {e}")
+        logger.error(f"❌ Error global syncing: {e}")
 
     # Set presence
     await bot.change_presence(
