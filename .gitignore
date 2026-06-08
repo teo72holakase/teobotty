@@ -68,3 +68,6 @@ htmlcov/
 # Temporary files
 *.tmp
 tempCodeRunnerFile.py
+
+# Ylos pngs wacho qtanto
+*.png
